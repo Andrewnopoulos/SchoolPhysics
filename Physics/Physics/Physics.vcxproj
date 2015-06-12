@@ -73,8 +73,11 @@
     <ClCompile Include="FlyCamera.cpp" />
     <ClCompile Include="gl_core_4_4.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PhysicsScene.cpp" />
     <ClCompile Include="PhysXTutorial.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="SphereClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -82,8 +85,11 @@
     <ClInclude Include="FlyCamera.h" />
     <ClInclude Include="gl_core_4_4.h" />
     <ClInclude Include="PhysicsObject.h" />
+    <ClInclude Include="PhysicsScene.h" />
     <ClInclude Include="PhysXTutorial.h" />
+    <ClInclude Include="RigidBody.h" />
     <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="SphereClass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
