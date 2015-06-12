@@ -22,12 +22,17 @@ void PhysXTutorial::Update()
 	while (g_PhysicsScene->fetchResults() == false)
 	{
 		// don’t need to do anything here yet but we have to fetch results
-	}	float density = 10;
+	}
+
+	float density = 10;
 	PxBoxGeometry box(2, 2, 2);
-	PxTransform transform(PxVec3(0, 5, 0));	PxRigidDynamic* dynamicActor = PxCreateDynamic(*g_Physics, transform, box,
+	PxTransform transform(PxVec3(0, 5, 0));
+
+	PxRigidDynamic* dynamicActor = PxCreateDynamic(*g_Physics, transform, box,
 		*g_PhysicsMaterial, density);
 	//add it to the physX scene
-	g_PhysicsScene->addActor(*dynamicActor);
+	g_PhysicsScene->addActor(*dynamicActor);
+
 }
 void PhysXTutorial::Draw()
 {
@@ -92,5 +97,6 @@ void PhysXTutorial::SetUpEnvironment()
 	PxRigidDynamic* dynamicActor = PxCreateDynamic(*g_Physics, transform, box,
 		*g_PhysicsMaterial, density);
 	//add it to the physX scene
-	g_PhysicsScene->addActor(*dynamicActor);
+	g_PhysicsScene->addActor(*dynamicActor);
+
 }
