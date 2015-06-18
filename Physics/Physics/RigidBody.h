@@ -16,4 +16,3 @@ public:
 	void applyForceToActor(RigidBody* actor2, glm::vec2 force);
 	~RigidBody();
 };
-
