@@ -20,7 +20,8 @@ void RigidBody::applyForce(glm::vec2 force)
 
 void RigidBody::applyForceToActor(RigidBody* actor2, glm::vec2 force)
 {
-	actor2->applyForce(force);
+	actor2->applyForce(-force);
+	applyForce(force);
 }
 
 void RigidBody::Update(glm::vec2 gravity, float timeStep)
