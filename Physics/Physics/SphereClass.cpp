@@ -5,6 +5,7 @@ SphereClass::SphereClass(glm::vec2 position, glm::vec2 velocity, float mass, flo
 {
 	m_radius = radius;
 	m_colour = colour;
+	_shapeID = SPHERE;
 }
 
 SphereClass::~SphereClass()

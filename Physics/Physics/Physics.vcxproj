@@ -77,6 +77,7 @@
     <ClCompile Include="PhysicsScene.cpp" />
     <ClCompile Include="PhysicsTute.cpp" />
     <ClCompile Include="PhysXTutorial.cpp" />
+    <ClCompile Include="Plane.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="SphereClass.cpp" />
@@ -90,6 +91,7 @@
     <ClInclude Include="PhysicsScene.h" />
     <ClInclude Include="PhysicsTute.h" />
     <ClInclude Include="PhysXTutorial.h" />
+    <ClInclude Include="Plane.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="SphereClass.h" />

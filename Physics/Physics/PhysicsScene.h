@@ -3,20 +3,27 @@
 #include <vector>
 #include "PhysicsObject.h"
 
+class Plane;
+class RigidBody;
+class SphereClass;
+
 class PhysicsScene
 {
 public:
 	glm::vec2 m_gravity;
 	float m_timestep;
 	float AR = 16.0f / 9.0f; // aspect ratio
-	std::vector<PhysicsObject*> m_actors;
-	void AddActor(PhysicsObject*);
-	void RemoveActor(PhysicsObject*);
+	std::vector<RigidBody*> m_actors;
+	Plane* m_ground;
+	void AddActor(RigidBody*);
+	void RemoveActor(RigidBody*);
 	void Update();
 	void DebugScene();
 	void AddGizmos();
 	void UpdateGizmos();
 	void UpdateGizmos(glm::mat4 cameraTransform);
+	bool SphereSphereCollision(SphereClass* sphere1, SphereClass* sphere2);
+	bool SpherePlaneCollision(SphereClass* sphere, Plane* plane);
 	PhysicsScene();
 	~PhysicsScene();
 };
