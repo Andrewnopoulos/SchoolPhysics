@@ -14,7 +14,7 @@ public:
 	float m_timestep;
 	float AR = 16.0f / 9.0f; // aspect ratio
 	std::vector<RigidBody*> m_actors;
-	Plane* m_ground;
+	std::vector<Plane*> m_walls;
 	void AddActor(RigidBody*);
 	void RemoveActor(RigidBody*);
 	void Update();

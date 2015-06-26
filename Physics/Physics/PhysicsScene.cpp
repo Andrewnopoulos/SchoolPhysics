@@ -39,6 +39,11 @@ void PhysicsScene::UpdateGizmos()
 		var->MakeGizmo();
 	}
 
+	for each (Plane* plane in m_walls)
+	{
+		plane->MakeGizmo();
+	}
+
 	Gizmos::draw2D(glm::ortho<float>(-100, 100, -100 / AR, 100 / AR, -1.0f, 1.0f));
 }
 
@@ -51,7 +56,10 @@ void PhysicsScene::UpdateGizmos(glm::mat4 cameraTransform)
 		var->MakeGizmo();
 	}
 
-	m_ground->MakeGizmo();
+	for each (Plane* plane in m_walls)
+	{
+		plane->MakeGizmo();
+	}
 
 	Gizmos::draw(cameraTransform);
 }
@@ -90,23 +98,23 @@ bool PhysicsScene::SpherePlaneCollision(SphereClass* sphere, Plane* plane)
 {
 	glm::vec2 collisionNormal = plane->m_normal;
 	float sphereToPlane = glm::dot(sphere->m_position, plane->m_normal) - plane->m_distanceToOrigin;
-	if (sphereToPlane < 0) // if sphere is behind, flip the normal
-	{
-		collisionNormal *= -1;
-		sphereToPlane *= -1;
-	}
+	//if (sphereToPlane < 0) // if sphere is behind, flip the normal
+	//{
+	//	collisionNormal *= -1;
+	//	sphereToPlane *= -1;
+	//}
 	float intersection = sphere->m_radius - sphereToPlane; // intersection between sphere and plane
 	if (intersection > 0)
 	{
 		// find point of collision
 		glm::vec2 planeNormal = plane->m_normal;
-		if (sphereToPlane < 0)
-		{
-			planeNormal *= -1; // flip normal if behind plane
-		}
+		//if (sphereToPlane < 0)
+		//{
+		//	planeNormal *= -1; // flip normal if behind plane
+		//}
 		glm::vec2 forceVector = -1 * sphere->m_mass * planeNormal * glm::dot(planeNormal, sphere->m_velocity);
 		sphere->applyForce(2 * forceVector);
-		sphere->m_position += collisionNormal * intersection * 0.5f;
+		sphere->m_position += collisionNormal * intersection * 1.5f;
 		return true;
 	}
 	return false;
