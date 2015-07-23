@@ -61,8 +61,8 @@ void PhysicsTute::Update()
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		physicsScene->m_actors[0]->applyForce(glm::vec3(0, 10.0f, 0));
-		physicsScene->m_actors[1]->applyForce(glm::vec3(0, 20.0f, 0));
+		physicsScene->m_actors[0]->applyForce(glm::vec3(0, 10.0f, 20.0f));
+		physicsScene->m_actors[1]->applyForce(glm::vec3(0, 20.0f, -10.0f));
 	}
 
 	if (physicsScene->SphereSphereCollision((SphereClass*)physicsScene->m_actors[0], (SphereClass*)physicsScene->m_actors[1]))
