@@ -6,6 +6,7 @@
 class Plane;
 class RigidBody;
 class SphereClass;
+class AABBClass;
 
 class PhysicsScene
 {
@@ -24,6 +25,7 @@ public:
 	void UpdateGizmos(glm::mat4 cameraTransform);
 	bool SphereSphereCollision(SphereClass* sphere1, SphereClass* sphere2);
 	bool SpherePlaneCollision(SphereClass* sphere, Plane* plane);
+	bool AABBAABBCollision(AABBClass* box1, AABBClass* box2);
 	PhysicsScene();
 	~PhysicsScene();
 };

@@ -2,6 +2,7 @@
 #include "RigidBody.h"
 #include "SphereClass.h"
 #include "Plane.h"
+#include "AABBClass.h"
 #include <glm\glm.hpp>
 #include <glm\ext.hpp>
 #include <Gizmos.h>
@@ -118,4 +119,22 @@ bool PhysicsScene::SpherePlaneCollision(SphereClass* sphere, Plane* plane)
 		return true;
 	}
 	return false;
+}
+
+bool PhysicsScene::AABBAABBCollision(AABBClass* box1, AABBClass* box2)
+{
+	bool collision = false;
+
+	glm::vec3 b1min = box1->GetMin();
+	glm::vec3 b1max = box1->GetMax();
+	glm::vec3 b2min = box2->GetMin();
+	glm::vec3 b2max = box2->GetMax();
+
+	collision =		b1min.x < b2max.x && b1max.x > b2min.x &&
+					b1min.y < b2max.y && b1max.y > b2min.y &&
+					b1min.z < b2max.z && b1max.z > b2min.z;
+
+
+	return collision;
+
 }

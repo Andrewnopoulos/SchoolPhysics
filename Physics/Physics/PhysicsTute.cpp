@@ -1,6 +1,7 @@
 #include "PhysicsTute.h"
 #include "SphereClass.h"
 #include "PhysicsScene.h"
+#include "AABBClass.h"
 #include "Plane.h"
 
 #include <iostream>
