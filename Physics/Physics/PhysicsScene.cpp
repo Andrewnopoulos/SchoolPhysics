@@ -81,7 +81,7 @@ bool PhysicsScene::SphereSphereCollision(SphereClass* sphere1, SphereClass* sphe
 	{
 		glm::vec2 collisionNormal = glm::normalize(delta);
 		glm::vec2 relativeVelocity = sphere1->m_velocity - sphere2->m_velocity;
-		glm::vec2 collisionVector = collisionNormal * glm::dot(relativeVelocity, collisionNormal);
+		glm::vec2 collisionVector = collisionNormal * glm::abs(glm::dot(relativeVelocity, collisionNormal));
 		glm::vec2 forceVector = collisionVector * 1.0f / (1 / sphere1->m_mass + 1 / sphere2->m_mass);
 		// use newton's 3rd law to apply collision forces to bodies
 		sphere1->applyForceToActor(sphere2, - 2 * forceVector);
