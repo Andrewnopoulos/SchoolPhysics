@@ -74,19 +74,19 @@ void PhysicsScene::Update()
 
 bool PhysicsScene::SphereSphereCollision(SphereClass* sphere1, SphereClass* sphere2)
 {
-	glm::vec2 delta = sphere2->m_position - sphere1->m_position;
+	glm::vec3 delta = sphere2->m_position - sphere1->m_position;
 	float distance = glm::length(delta);
 	float intersection = sphere2->m_radius + sphere1->m_radius - distance;
 	if (intersection > 0)
 	{
-		glm::vec2 collisionNormal = glm::normalize(delta);
-		glm::vec2 relativeVelocity = sphere1->m_velocity - sphere2->m_velocity;
-		glm::vec2 collisionVector = collisionNormal * glm::abs(glm::dot(relativeVelocity, collisionNormal));
-		glm::vec2 forceVector = collisionVector * 1.0f / (1 / sphere1->m_mass + 1 / sphere2->m_mass);
+		glm::vec3 collisionNormal = glm::normalize(delta);
+		glm::vec3 relativeVelocity = sphere1->m_velocity - sphere2->m_velocity;
+		glm::vec3 collisionVector = collisionNormal * glm::abs(glm::dot(relativeVelocity, collisionNormal));
+		glm::vec3 forceVector = collisionVector * 1.0f / (1 / sphere1->m_mass + 1 / sphere2->m_mass);
 		// use newton's 3rd law to apply collision forces to bodies
 		sphere1->applyForceToActor(sphere2, - 2 * forceVector);
 		//move spheres out of collision
-		glm::vec2 separationVector = collisionNormal * intersection * 0.5f;
+		glm::vec3 separationVector = collisionNormal * intersection * 0.5f;
 		sphere1->m_position -= separationVector;
 		sphere2->m_position += separationVector;
 		return true;
@@ -96,7 +96,7 @@ bool PhysicsScene::SphereSphereCollision(SphereClass* sphere1, SphereClass* sphe
 
 bool PhysicsScene::SpherePlaneCollision(SphereClass* sphere, Plane* plane)
 {
-	glm::vec2 collisionNormal = plane->m_normal;
+	glm::vec3 collisionNormal = plane->m_normal;
 	float sphereToPlane = glm::dot(sphere->m_position, plane->m_normal) - plane->m_distanceToOrigin;
 	//if (sphereToPlane < 0) // if sphere is behind, flip the normal
 	//{
@@ -107,12 +107,12 @@ bool PhysicsScene::SpherePlaneCollision(SphereClass* sphere, Plane* plane)
 	if (intersection > 0)
 	{
 		// find point of collision
-		glm::vec2 planeNormal = plane->m_normal;
+		glm::vec3 planeNormal = plane->m_normal;
 		//if (sphereToPlane < 0)
 		//{
 		//	planeNormal *= -1; // flip normal if behind plane
 		//}
-		glm::vec2 forceVector = -1 * sphere->m_mass * planeNormal * glm::dot(planeNormal, sphere->m_velocity);
+		glm::vec3 forceVector = -1 * sphere->m_mass * planeNormal * glm::dot(planeNormal, sphere->m_velocity);
 		sphere->applyForce(2 * forceVector);
 		sphere->m_position += collisionNormal * intersection * 1.5f;
 		return true;
