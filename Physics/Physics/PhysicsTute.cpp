@@ -8,29 +8,29 @@
 void PhysicsTute::Startup()
 {
 	physicsScene = new PhysicsScene();
-	physicsScene->m_gravity = glm::vec2(0, -50000.0f);
+	physicsScene->m_gravity = glm::vec3(0, -50000.0f, 0);
 	physicsScene->m_timestep = 0.0001f;
 	
 	// add balls to sim
 	SphereClass *newBall;
 
-	newBall = new SphereClass(glm::vec2(7, 10), glm::vec2(0, 0), 3.0f, 1, glm::vec4(1, 0, 0, 1));
+	newBall = new SphereClass(glm::vec3(7, 10, 0), glm::vec3(0, 0, 0), 3.0f, 1, glm::vec4(1, 0, 0, 1));
 	physicsScene->AddActor(newBall);
-	newBall = new SphereClass(glm::vec2(10, 10), glm::vec2(0, 0), 3.0f, 1, glm::vec4(1, 0, 0, 1));
+	newBall = new SphereClass(glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), 3.0f, 1, glm::vec4(1, 0, 0, 1));
 	physicsScene->AddActor(newBall);
 
 	Plane *newPlane;
 
-	newPlane = new Plane(glm::vec2(0, 1), 1.0f);
+	newPlane = new Plane(glm::vec3(0, 1, 0), 1.0f);
 	physicsScene->m_walls.push_back(newPlane);
 
-	newPlane = new Plane(glm::vec2(0, -1), -50.0f);
+	newPlane = new Plane(glm::vec3(0, -1, 0), -50.0f);
 	physicsScene->m_walls.push_back(newPlane);
 
-	newPlane = new Plane(glm::vec2(-1, 0), -50.0f);
+	newPlane = new Plane(glm::vec3(-1, 0, 0), -50.0f);
 	physicsScene->m_walls.push_back(newPlane);
 
-	newPlane = new Plane(glm::vec2(1, 0), -50.0f);
+	newPlane = new Plane(glm::vec3(1, 0, 0), -50.0f);
 	physicsScene->m_walls.push_back(newPlane);
 
 	currentTime = 0;
@@ -55,14 +55,14 @@ void PhysicsTute::Update()
 
 	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
 	{
-		glm::vec2 separation = physicsScene->m_actors[1]->m_position - physicsScene->m_actors[0]->m_position;
+		glm::vec3 separation = physicsScene->m_actors[1]->m_position - physicsScene->m_actors[0]->m_position;
 		physicsScene->m_actors[0]->applyForceToActor(physicsScene->m_actors[1], separation * 300 / glm::length(separation));
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		physicsScene->m_actors[0]->applyForce(glm::vec2(0, 10.0f));
-		physicsScene->m_actors[1]->applyForce(glm::vec2(0, 20.0f));
+		physicsScene->m_actors[0]->applyForce(glm::vec3(0, 10.0f, 0));
+		physicsScene->m_actors[1]->applyForce(glm::vec3(0, 20.0f, 0));
 	}
 
 	if (physicsScene->SphereSphereCollision((SphereClass*)physicsScene->m_actors[0], (SphereClass*)physicsScene->m_actors[1]))
