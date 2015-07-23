@@ -6,15 +6,15 @@
 class RigidBody : public PhysicsObject
 {
 public:
-	glm::vec2 m_position;
-	glm::vec2 m_velocity;
+	glm::vec3 m_position;
+	glm::vec3 m_velocity;
 	float m_mass;
 	float m_rotation2D;
-	RigidBody(glm::vec2 position, glm::vec2 velocity, float rotation, float mass);
-	virtual void Update(glm::vec2 gravity, float timeStep);
+	RigidBody(glm::vec3 position, glm::vec3 velocity, float rotation, float mass);
+	virtual void Update(glm::vec3 gravity, float timeStep);
 	virtual void Debug() = 0;
 	virtual void MakeGizmo() = 0;
-	void applyForce(glm::vec2 force);
-	void applyForceToActor(RigidBody* actor2, glm::vec2 force);
+	void applyForce(glm::vec3 force);
+	void applyForceToActor(RigidBody* actor2, glm::vec3 force);
 	~RigidBody();
 };

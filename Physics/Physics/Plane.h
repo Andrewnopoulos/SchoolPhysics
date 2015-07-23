@@ -7,11 +7,11 @@
 class Plane : public PhysicsObject
 {
 public:
-	glm::vec2 m_normal;
+	glm::vec3 m_normal;
 	float m_distanceToOrigin;
 
-	Plane(glm::vec2 normal, float distanceToOrigin);
-	virtual void Update(glm::vec2 gravity, float timeStep) {};
+	Plane(glm::vec3 normal, float distanceToOrigin);
+	virtual void Update(glm::vec3 gravity, float timeStep) {};
 	virtual void Debug() {};
 	virtual void MakeGizmo();
 	~Plane();

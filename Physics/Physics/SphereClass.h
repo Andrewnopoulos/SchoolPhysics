@@ -9,7 +9,7 @@ public:
 	float m_radius;
 	glm::vec4 m_colour;
 
-	SphereClass(glm::vec2 position, glm::vec2 velocity, float mass, float radius, glm::vec4 colour);
+	SphereClass(glm::vec3 position, glm::vec3 velocity, float mass, float radius, glm::vec4 colour);
 	virtual void Debug();
 	virtual void MakeGizmo();
 	~SphereClass();

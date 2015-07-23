@@ -10,7 +10,7 @@ class SphereClass;
 class PhysicsScene
 {
 public:
-	glm::vec2 m_gravity;
+	glm::vec3 m_gravity;
 	float m_timestep;
 	float AR = 16.0f / 9.0f; // aspect ratio
 	std::vector<RigidBody*> m_actors;
