@@ -68,6 +68,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AABBClass.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="dep\aieutil\Gizmos.cpp" />
@@ -83,6 +84,7 @@
     <ClCompile Include="SphereClass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AABBClass.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FlyCamera.h" />
