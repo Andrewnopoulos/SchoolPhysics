@@ -12,7 +12,7 @@ public:
 	~AABBClass();
 
 	void Update(glm::vec3 gravity, float timeStep);
-
+	void Debug() {};
 	void MakeGizmo();
 
 	inline glm::vec3 GetMin()

@@ -134,6 +134,29 @@ bool PhysicsScene::AABBAABBCollision(AABBClass* box1, AABBClass* box2)
 					b1min.y < b2max.y && b1max.y > b2min.y &&
 					b1min.z < b2max.z && b1max.z > b2min.z;
 
+	return collision;
+
+}
+
+bool PhysicsScene::SphereAABBCollision(SphereClass* sphere, AABBClass* box)
+{
+	bool collision = false;
+	float dist_squared = Squared(sphere->m_radius);
+
+	glm::vec3 min = box->GetMin();
+	glm::vec3 max = box->GetMax();
+	glm::vec3 center = sphere->m_position;
+
+	if (center.x < min.x) dist_squared -= Squared(center.x - min.x);
+	else if (center.x > max.x) dist_squared -= Squared(center.x - max.x);
+
+	if (center.y < min.y) dist_squared -= Squared(center.y - min.y);
+	else if (center.y > max.y) dist_squared -= Squared(center.y - max.y);
+
+	if (center.z < min.z) dist_squared -= Squared(center.z - min.z);
+	else if (center.z > max.z) dist_squared -= Squared(center.z - max.z);
+
+	collision = dist_squared > 0;
 
 	return collision;
 

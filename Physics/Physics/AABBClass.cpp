@@ -7,6 +7,7 @@ AABBClass::AABBClass(glm::vec3 position, glm::vec3 velocity, float mass, glm::ve
 {
 	m_dimensions = dimensions;
 	m_colour = colour;
+	_shapeID = AABB;
 }
 
 AABBClass::~AABBClass()

@@ -26,6 +26,10 @@ public:
 	bool SphereSphereCollision(SphereClass* sphere1, SphereClass* sphere2);
 	bool SpherePlaneCollision(SphereClass* sphere, Plane* plane);
 	bool AABBAABBCollision(AABBClass* box1, AABBClass* box2);
+	bool SphereAABBCollision(SphereClass* sphere, AABBClass* box);
+
+	inline float Squared(float input) { return input * input; }
+
 	PhysicsScene();
 	~PhysicsScene();
 };
