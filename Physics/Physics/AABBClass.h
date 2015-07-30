@@ -7,7 +7,7 @@ private:
 	glm::vec4 m_colour;
 
 public:
-	AABBClass(glm::vec3 position, glm::vec3 velocity, float mass, glm::vec3 a_dimensions, glm::vec4 a_colour);
+	AABBClass(glm::vec3 position, glm::vec3 velocity, float mass, float elasticity, glm::vec3 a_dimensions, glm::vec4 a_colour);
 	~AABBClass();
 
 	glm::vec3 m_dimensions;

@@ -10,7 +10,8 @@ public:
 	glm::vec3 m_velocity;
 	float m_mass;
 	float m_rotation2D;
-	RigidBody(glm::vec3 position, glm::vec3 velocity, float rotation, float mass);
+	float m_elasticity;
+	RigidBody(glm::vec3 position, glm::vec3 velocity, float rotation, float mass, float elasticity);
 	virtual void Update(glm::vec3 gravity, float timeStep);
 	virtual void Debug() = 0;
 	virtual void MakeGizmo() = 0;

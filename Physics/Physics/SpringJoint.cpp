@@ -22,17 +22,18 @@ void SpringJoint::MakeGizmo()
 {
 	Gizmos::addTri(m_connections[0]->m_position, 
 		m_connections[1]->m_position, 
-		m_connections[0]->m_position + glm::vec3(2, 2, 2), 
+		m_connections[0]->m_position + glm::vec3(0.2f, 0.2f, 0.2f),
 		glm::vec4(1, 0, 1, 1));
 	Gizmos::addTri(m_connections[1]->m_position,
-		m_connections[1]->m_position + glm::vec3(2, 2, 2),
-		m_connections[0]->m_position + glm::vec3(2, 2, 2),
+		m_connections[1]->m_position + glm::vec3(0.2f, 0.2f, 0.2f),
+		m_connections[0]->m_position + glm::vec3(0.2f, 0.2f, 0.2f),
 		glm::vec4(1, 0, 1, 1));
 }
 
 void SpringJoint::Update(glm::vec3 gravity, float timestep)
 {
 	glm::vec3 dir = m_connections[0]->m_position - m_connections[1]->m_position;
+	glm::vec3 rel = m_connections[0]->m_velocity - m_connections[1]->m_velocity;
 	float X = glm::length(dir) - m_restLength;
-	m_connections[0]->applyForceToActor(m_connections[1], -1.0f * m_springCoefficient * X * dir);
+	m_connections[0]->applyForceToActor(m_connections[1], (-1.0f * m_springCoefficient * X * dir) - (m_damping * rel));
 }

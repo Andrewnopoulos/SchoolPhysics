@@ -1,7 +1,7 @@
 #include "SphereClass.h"
 #include <Gizmos.h>
 
-SphereClass::SphereClass(glm::vec3 position, glm::vec3 velocity, float mass, float radius, glm::vec4 colour) : RigidBody(position, velocity, 0, mass)
+SphereClass::SphereClass(glm::vec3 position, glm::vec3 velocity, float mass, float radius, float elasticity, glm::vec4 colour) : RigidBody(position, velocity, 0, mass, elasticity)
 {
 	m_radius = radius;
 	m_colour = colour;

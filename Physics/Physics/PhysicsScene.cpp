@@ -3,6 +3,7 @@
 #include "SphereClass.h"
 #include "Plane.h"
 #include "AABBClass.h"
+#include "SpringJoint.h"
 #include <glm\glm.hpp>
 #include <glm\ext.hpp>
 #include <Gizmos.h>
@@ -17,12 +18,12 @@ PhysicsScene::~PhysicsScene()
 	Gizmos::destroy();
 }
 
-void PhysicsScene::AddActor(RigidBody* a_object)
+void PhysicsScene::AddActor(PhysicsObject* a_object)
 {
 	m_actors.push_back(a_object);
 }
 
-void PhysicsScene::RemoveActor(RigidBody* a_object)
+void PhysicsScene::RemoveActor(PhysicsObject* a_object)
 {
 	auto position = std::find(m_actors.begin(), m_actors.end(), a_object);
 	if (position != m_actors.end())
@@ -114,7 +115,7 @@ bool PhysicsScene::SpherePlaneCollision(SphereClass* sphere, Plane* plane)
 		//	planeNormal *= -1; // flip normal if behind plane
 		//}
 		glm::vec3 forceVector = -1 * sphere->m_mass * planeNormal * glm::dot(planeNormal, sphere->m_velocity);
-		sphere->applyForce(2 * forceVector);
+		sphere->applyForce(2 * forceVector * sphere->m_elasticity);
 		sphere->m_position += collisionNormal * intersection * 1.5f;
 		return true;
 	}
@@ -156,44 +157,12 @@ bool PhysicsScene::AABBPlaneCollision(AABBClass* box, Plane* plane)
 	{
 		float intersection = plane->m_distanceToOrigin - closest;
 		glm::vec3 forceVector = -1 * box->m_mass * normal * glm::dot(normal, box->m_velocity);
-		box->applyForce(2 * forceVector);
+		box->applyForce(2 * forceVector * box->m_elasticity);
 		box->m_position += normal * intersection;
 		return true;
 	}
 	return false;
 
-}
-
-bool PhysicsScene::RigidPlaneCollision(RigidBody* object, Plane* plane)
-{
-	glm::vec3 center;
-	float radius;
-	glm::vec3 collisionNormal = plane->m_normal;
-
-	switch (object->_shapeID)
-	{
-	case SPHERE:
-		center = object->m_position;
-		radius = ((SphereClass*)object)->m_radius;
-		break;
-	case AABB:
-		center = ((AABBClass*)object)->GetCenter();
-		glm::vec3 dim = ((AABBClass*)object)->m_dimensions;
-		radius = abs(dim.x * collisionNormal.x) + abs(dim.y * collisionNormal.y) + abs(dim.z * collisionNormal.z);
-		break;
-	}
-
-	float distToPlane = glm::dot(center, collisionNormal) - plane->m_distanceToOrigin;
-	float intersection = radius - distToPlane;
-
-	if (intersection > 0)
-	{
-		glm::vec3 forceVector = -1 * object->m_mass * collisionNormal * glm::dot(collisionNormal, object->m_velocity);
-		object->applyForce(2 * forceVector);
-		object->m_position += collisionNormal * intersection;
-		return true;
-	}
-	return false;
 }
 
 bool PhysicsScene::AABBAABBCollision(AABBClass* box1, AABBClass* box2)
@@ -209,8 +178,9 @@ bool PhysicsScene::AABBAABBCollision(AABBClass* box1, AABBClass* box2)
 					b1min.y < b2max.y && b1max.y > b2min.y &&
 					b1min.z < b2max.z && b1max.z > b2min.z;
 
-	return collision;
 
+
+	return collision;
 }
 
 bool PhysicsScene::SphereAABBCollision(SphereClass* sphere, AABBClass* box)

@@ -1,9 +1,8 @@
 #include "AABBClass.h"
 #include <Gizmos.h>
 
-
-AABBClass::AABBClass(glm::vec3 position, glm::vec3 velocity, float mass, glm::vec3 dimensions, glm::vec4 colour)
-: RigidBody(position, velocity, 0, mass)
+AABBClass::AABBClass(glm::vec3 position, glm::vec3 velocity, float mass, float elasticity, glm::vec3 dimensions, glm::vec4 colour)
+: RigidBody(position, velocity, 0, mass, elasticity)
 {
 	m_dimensions = dimensions;
 	m_colour = colour;
