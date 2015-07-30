@@ -78,10 +78,16 @@ void PhysicsTute::Update()
 	{
 		for each(Plane* plane in physicsScene->m_walls)
 		{
-			if (var->_shapeID == SPHERE)
+			switch (var->_shapeID)
 			{
+			case SPHERE:
 				physicsScene->SpherePlaneCollision((SphereClass*)var, plane);
+				break;
+			case AABB:
+				physicsScene->AABBPlaneCollision((AABBClass*)var, plane);
+				break;
 			}
+			
 		}
 
 		for each(RigidBody* var2 in physicsScene->m_actors)

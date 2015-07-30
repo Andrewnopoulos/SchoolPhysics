@@ -82,6 +82,7 @@
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="SphereClass.cpp" />
+    <ClCompile Include="SpringJoint.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABBClass.h" />
@@ -97,6 +98,7 @@
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="SphereClass.h" />
+    <ClInclude Include="SpringJoint.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

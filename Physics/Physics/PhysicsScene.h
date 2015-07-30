@@ -27,6 +27,8 @@ public:
 	bool SpherePlaneCollision(SphereClass* sphere, Plane* plane);
 	bool AABBAABBCollision(AABBClass* box1, AABBClass* box2);
 	bool SphereAABBCollision(SphereClass* sphere, AABBClass* box);
+	bool AABBPlaneCollision(AABBClass* box, Plane* plane);
+	bool RigidPlaneCollision(RigidBody* object, Plane* plane);
 
 	inline float Squared(float input) { return input * input; }
 

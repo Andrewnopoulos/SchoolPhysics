@@ -57,6 +57,9 @@
     <ClCompile Include="AABBClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SpringJoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -96,6 +99,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AABBClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpringJoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -23,8 +23,3 @@ void AABBClass::SetPosition(glm::vec3 a_position)
 {
 	m_position = a_position;
 }
-
-void AABBClass::Update(glm::vec3 gravity, float timeStep)
-{
-	m_position += m_velocity * timeStep;
-}
