@@ -80,7 +80,19 @@ void PhysicsScene::CollisionResponse(glm::vec3 collisionNormal, RigidBody* objec
 	glm::vec3 collisionVector = collisionNormal * glm::abs(glm::dot(relativeVelocity, collisionNormal));
 	glm::vec3 forceVector = collisionVector * 1.0f / (1 / object1->m_mass + 1 / object2->m_mass);
 	// use newton's 3rd law to apply collision forces to bodies
-	object1->applyForceToActor(object2, -2 * forceVector);
+	
+	if (object1->m_static)
+	{
+		object2->applyForce(forceVector);
+	}
+	else if (object2->m_static)
+	{
+		object1->applyForce(-1 * forceVector);
+	}
+	else
+	{
+		object1->applyForceToActor(object2, -2 * forceVector);
+	}
 }
 
 bool PhysicsScene::SphereSphereCollision(SphereClass* sphere1, SphereClass* sphere2)
@@ -95,8 +107,21 @@ bool PhysicsScene::SphereSphereCollision(SphereClass* sphere1, SphereClass* sphe
 
 		//move spheres out of collision
 		glm::vec3 separationVector = collisionNormal * intersection * 0.5f;
-		sphere1->m_position -= separationVector;
-		sphere2->m_position += separationVector;
+
+		if (sphere1->m_static)
+		{
+			sphere2->m_position += separationVector * 2;
+		}
+		else if (sphere2->m_static)
+		{
+			sphere1->m_position -= separationVector * 2;
+		}
+		else
+		{
+			sphere1->m_position -= separationVector;
+			sphere2->m_position += separationVector;
+		}
+		
 		return true;
 	}
 	return false;
@@ -121,7 +146,7 @@ bool PhysicsScene::SpherePlaneCollision(SphereClass* sphere, Plane* plane)
 		//	planeNormal *= -1; // flip normal if behind plane
 		//}
 		glm::vec3 forceVector = -1 * sphere->m_mass * planeNormal * glm::dot(planeNormal, sphere->m_velocity);
-		sphere->applyForce(2 * forceVector * sphere->m_elasticity);
+		sphere->applyForce(2 * forceVector);
 		sphere->m_position += collisionNormal * intersection * 1.5f;
 		return true;
 	}
@@ -163,7 +188,7 @@ bool PhysicsScene::AABBPlaneCollision(AABBClass* box, Plane* plane)
 	{
 		float intersection = plane->m_distanceToOrigin - closest;
 		glm::vec3 forceVector = -1 * box->m_mass * normal * glm::dot(normal, box->m_velocity);
-		box->applyForce(2 * forceVector * box->m_elasticity);
+		box->applyForce(2 * forceVector);
 		box->m_position += normal * intersection;
 		return true;
 	}
@@ -194,52 +219,78 @@ bool PhysicsScene::AABBAABBCollision(AABBClass* box1, AABBClass* box2)
 		float smallestOverlap = glm::min(glm::min(xOverlap, yOverlap), zOverlap);
 		glm::vec3 collisionNormal;
 
+		float delta = 0;
+		int axis;
+
 		// depending on which overlap is smallest, determine normal of collision
 		// depending on which box is on which side, determine direction of separation
 		if (smallestOverlap == xOverlap)
 		{
+			axis = 0;
 			collisionNormal = glm::vec3(1, 0, 0);
 			if (box1->GetMin().x < box2->GetMin().x)
 			{
-				box1->m_position.x -= smallestOverlap / 2;
-				box2->m_position.x += smallestOverlap / 2;
+				delta = -1 * smallestOverlap / 2;
+				//box1->m_position.x -= smallestOverlap / 2;
+				//box2->m_position.x += smallestOverlap / 2;
 			}
 			else
 			{
 				collisionNormal *= -1.0f;
-				box1->m_position.x += smallestOverlap / 2;
-				box2->m_position.x -= smallestOverlap / 2;
+				delta = smallestOverlap / 2;
+				//box1->m_position.x += smallestOverlap / 2;
+				//box2->m_position.x -= smallestOverlap / 2;
 			}
 		}
 		else if (smallestOverlap == yOverlap)
 		{
+			axis = 1;
 			collisionNormal = glm::vec3(0, 1, 0);
 			if (box1->GetMin().y < box2->GetMin().y)
 			{
-				box1->m_position.y -= smallestOverlap / 2;
-				box2->m_position.y += smallestOverlap / 2;
+				delta = -1 * smallestOverlap / 2;
+				//box1->m_position.y -= smallestOverlap / 2;
+				//box2->m_position.y += smallestOverlap / 2;
 			}
 			else
 			{
 				collisionNormal *= -1.0f;
-				box1->m_position.y += smallestOverlap / 2;
-				box2->m_position.y -= smallestOverlap / 2;
+				delta = smallestOverlap / 2;
+				//box1->m_position.y += smallestOverlap / 2;
+				//box2->m_position.y -= smallestOverlap / 2;
 			}
 		}
 		else if (smallestOverlap == zOverlap)
 		{
+			axis = 2;
 			collisionNormal = glm::vec3(0, 0, 1);
 			if (box1->GetMin().z < box2->GetMin().z)
 			{
-				box1->m_position.z -= smallestOverlap / 2;
-				box2->m_position.z += smallestOverlap / 2;
+				delta = -1 * smallestOverlap / 2;
+				//box1->m_position.z -= smallestOverlap / 2;
+				//box2->m_position.z += smallestOverlap / 2;
 			}
 			else
 			{
 				collisionNormal *= -1.0f;
-				box1->m_position.z += smallestOverlap / 2;
-				box2->m_position.z -= smallestOverlap / 2;
+				delta = smallestOverlap / 2;
+				//box1->m_position.z += smallestOverlap / 2;
+				//box2->m_position.z -= smallestOverlap / 2;
 			}
+		}
+
+		if (box1->m_static)
+		{
+			box2->m_position[axis] -= delta * 2;
+		}
+		else if (box2->m_static)
+		{
+			box1->m_position[axis] += delta * 2;
+		}
+		else
+		{
+			box1->m_position[axis] += delta;
+			box2->m_position[axis] -= delta;
 		}
 
 		CollisionResponse(collisionNormal, box1, box2);
