@@ -178,6 +178,71 @@ bool PhysicsScene::AABBAABBCollision(AABBClass* box1, AABBClass* box2)
 					b1min.y < b2max.y && b1max.y > b2min.y &&
 					b1min.z < b2max.z && b1max.z > b2min.z;
 
+	if (collision)
+	{
+		// determine direction of overlap
+		float xOverlap = glm::min(b1max.x - b2min.x, b2max.x - b1min.x);
+		float yOverlap = glm::min(b1max.y - b2min.y, b2max.y - b1min.y);
+		float zOverlap = glm::min(b1max.z - b2min.z, b2max.z - b1min.z);
+
+		float smallestOverlap = glm::min(glm::min(xOverlap, yOverlap), zOverlap);
+		glm::vec3 collisionNormal;
+
+		// depending on which overlap is smallest, determine normal of collision
+		// depending on which box is on which side, determine direction of separation
+		if (smallestOverlap == xOverlap)
+		{
+			collisionNormal = glm::vec3(1, 0, 0);
+			if (box1->GetMin().x < box2->GetMin().x)
+			{
+				box1->m_position.x -= smallestOverlap / 2;
+				box2->m_position.x += smallestOverlap / 2;
+			}
+			else
+			{
+				collisionNormal *= -1.0f;
+				box1->m_position.x += smallestOverlap / 2;
+				box2->m_position.x -= smallestOverlap / 2;
+			}
+		}
+		else if (smallestOverlap == yOverlap)
+		{
+			collisionNormal = glm::vec3(0, 1, 0);
+			if (box1->GetMin().y < box2->GetMin().y)
+			{
+				box1->m_position.y -= smallestOverlap / 2;
+				box2->m_position.y += smallestOverlap / 2;
+			}
+			else
+			{
+				collisionNormal *= -1.0f;
+				box1->m_position.y += smallestOverlap / 2;
+				box2->m_position.y -= smallestOverlap / 2;
+			}
+		}
+		else if (smallestOverlap == zOverlap)
+		{
+			collisionNormal = glm::vec3(0, 0, 1);
+			if (box1->GetMin().z < box2->GetMin().z)
+			{
+				box1->m_position.z -= smallestOverlap / 2;
+				box2->m_position.z += smallestOverlap / 2;
+			}
+			else
+			{
+				collisionNormal *= -1.0f;
+				box1->m_position.z += smallestOverlap / 2;
+				box2->m_position.z -= smallestOverlap / 2;
+			}
+		}
+
+		glm::vec3 relativeVelocity = box1->m_velocity - box2->m_velocity;
+		glm::vec3 collisionVector = collisionNormal * glm::abs(glm::dot(relativeVelocity, collisionNormal));
+		glm::vec3 forceVector = collisionVector * 1.0f / (1 / box1->m_mass + 1 / box2->m_mass);
+		// use newton's 3rd law to apply collision forces to bodies
+		box1->applyForceToActor(box2, -2 * forceVector);
+		
+	}
 
 
 	return collision;
@@ -192,16 +257,103 @@ bool PhysicsScene::SphereAABBCollision(SphereClass* sphere, AABBClass* box)
 	glm::vec3 max = box->GetMax();
 	glm::vec3 center = sphere->m_position;
 
-	if (center.x < min.x) dist_squared -= Squared(center.x - min.x);
-	else if (center.x > max.x) dist_squared -= Squared(center.x - max.x);
+	float xOverlap = 0; float yOverlap = 0; float zOverlap = 0;
 
-	if (center.y < min.y) dist_squared -= Squared(center.y - min.y);
-	else if (center.y > max.y) dist_squared -= Squared(center.y - max.y);
+	if (center.x < min.x)
+	{
+		xOverlap = Squared(center.x - min.x);
+	}
+	else if (center.x > max.x)
+	{
+		xOverlap = Squared(center.x - max.x);
+	}
 
-	if (center.z < min.z) dist_squared -= Squared(center.z - min.z);
-	else if (center.z > max.z) dist_squared -= Squared(center.z - max.z);
+	if (center.y < min.y)
+	{
+		yOverlap = Squared(center.y - min.y);
+	}
+	else if (center.y > max.y)
+	{
+		yOverlap = Squared(center.y - max.y);
+	}
+
+	if (center.z < min.z)
+	{
+		zOverlap = Squared(center.z - min.z);
+	}
+	else if (center.z > max.z)
+	{
+		zOverlap = Squared(center.z - max.z);
+	}
+
+	dist_squared -= xOverlap;
+	dist_squared -= yOverlap;
+	dist_squared -= zOverlap;
 
 	collision = dist_squared > 0;
+
+	if (collision)
+	{
+		float smallestOverlap = glm::min(glm::min(xOverlap, yOverlap), zOverlap);
+		glm::vec3 collisionNormal;
+
+		// depending on which overlap is smallest, determine normal of collision
+		// depending on which box is on which side, determine direction of separation
+		if (smallestOverlap == xOverlap)
+		{
+			smallestOverlap = glm::sqrt(smallestOverlap);
+			collisionNormal = glm::vec3(1, 0, 0);
+			if (box->GetCenter().x < sphere->m_position.x)
+			{
+				box->m_position.x -= smallestOverlap;
+				sphere->m_position.x += smallestOverlap;
+			}
+			else
+			{
+				collisionNormal *= -1.0f;
+				box->m_position.x += smallestOverlap;
+				sphere->m_position.x -= smallestOverlap;
+			}
+		}
+		else if (smallestOverlap == yOverlap)
+		{
+			smallestOverlap = glm::sqrt(smallestOverlap);
+			collisionNormal = glm::vec3(0, 1, 0);
+			if (box->GetCenter().y < sphere->m_position.y)
+			{
+				box->m_position.y -= smallestOverlap;
+				sphere->m_position.y += smallestOverlap;
+			}
+			else
+			{
+				collisionNormal *= -1.0f;
+				box->m_position.y += smallestOverlap;
+				sphere->m_position.y -= smallestOverlap;
+			}
+		}
+		else if (smallestOverlap == zOverlap)
+		{
+			smallestOverlap = glm::sqrt(smallestOverlap);
+			collisionNormal = glm::vec3(0, 0, 1);
+			if (box->GetCenter().z < sphere->m_position.z)
+			{
+				box->m_position.z -= smallestOverlap;
+				sphere->m_position.z += smallestOverlap;
+			}
+			else
+			{
+				collisionNormal *= -1.0f;
+				box->m_position.z += smallestOverlap;
+				sphere->m_position.z -= smallestOverlap;
+			}
+		}
+
+		glm::vec3 relativeVelocity = box->m_velocity - sphere->m_velocity;
+		glm::vec3 collisionVector = collisionNormal * glm::abs(glm::dot(relativeVelocity, collisionNormal));
+		glm::vec3 forceVector = collisionVector * 1.0f / (1 / box->m_mass + 1 / sphere->m_mass);
+		// use newton's 3rd law to apply collision forces to bodies
+		box->applyForceToActor(sphere, -2 * forceVector);
+	}
 
 	return collision;
 

@@ -42,11 +42,11 @@ void PhysicsTute::Startup()
 	//newPlane = new Plane(glm::vec3(1, 0, 0), -20.0f);
 	//physicsScene->m_walls.push_back(newPlane);
 
-	SpringJoint* joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[0]), (RigidBody*)(physicsScene->m_actors[1]), 10, 0.5f);
-	physicsScene->AddActor(joint);
+	//SpringJoint* joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[0]), (RigidBody*)(physicsScene->m_actors[1]), 10, 0.5f);
+	//physicsScene->AddActor(joint);
 
-	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[1]), (RigidBody*)(physicsScene->m_actors[2]), 5, 0.3f);
-	physicsScene->AddActor(joint);
+	//joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[1]), (RigidBody*)(physicsScene->m_actors[2]), 5, 0.3f);
+	//physicsScene->AddActor(joint);
 
 	currentTime = 0;
 	previousTime = 0;
@@ -72,6 +72,11 @@ void PhysicsTute::Update()
 	{
 		glm::vec3 separation = ((RigidBody*)physicsScene->m_actors[1])->m_position - ((RigidBody*)physicsScene->m_actors[2])->m_position;
 		((RigidBody*)physicsScene->m_actors[2])->applyForceToActor((RigidBody*)physicsScene->m_actors[1], separation / glm::length(separation));
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		((RigidBody*)physicsScene->m_actors[2])->applyForce(glm::vec3(0, 5, 0));
 	}
 
 	for each(PhysicsObject* var in physicsScene->m_actors)
