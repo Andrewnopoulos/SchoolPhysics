@@ -10,7 +10,7 @@
 void PhysicsTute::Startup()
 {
 	physicsScene = new PhysicsScene();
-	physicsScene->m_gravity = glm::vec3(0, -500.0f, 0);
+	physicsScene->m_gravity = glm::vec3(0, -200.0f, 0);
 	physicsScene->m_timestep = 0.01f;
 	
 	// add balls to sim
@@ -18,12 +18,12 @@ void PhysicsTute::Startup()
 
 	AABBClass *axisbox;
 
-	newBall = new SphereClass(glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), 3.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
+	newBall = new SphereClass(glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), 3.0f, 5, 0.95f, glm::vec4(1, 0, 0, 1));
 	physicsScene->AddActor(newBall);
-	newBall = new SphereClass(glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), 3.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
+	newBall = new SphereClass(glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), 3.0f, 5, 0.95f, glm::vec4(1, 0, 0, 1));
 	physicsScene->AddActor(newBall);
 	
-	axisbox = new AABBClass(glm::vec3(7, 10, 5), glm::vec3(0, 0, 0), 1.0f, 0.95f, glm::vec3(3, 3, 3), glm::vec4(0, 1, 0, 1));
+	axisbox = new AABBClass(glm::vec3(7, 10, 5), glm::vec3(0, 0, 0), 1.0f, 0.95f, glm::vec3(6, 6, 6), glm::vec4(0, 1, 0, 1));
 	physicsScene->AddActor(axisbox);
 	axisbox = new AABBClass(glm::vec3(10, 10, 5), glm::vec3(0, 0, 0), 1.0f, 0.95f, glm::vec3(3, 3, 3), glm::vec4(0, 1, 0, 1));
 	physicsScene->AddActor(axisbox);

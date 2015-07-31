@@ -29,6 +29,7 @@ public:
 	bool AABBAABBCollision(AABBClass* box1, AABBClass* box2);
 	bool SphereAABBCollision(SphereClass* sphere, AABBClass* box);
 	bool AABBPlaneCollision(AABBClass* box, Plane* plane);
+	void CollisionResponse(glm::vec3 collisionNormal, RigidBody* object1, RigidBody* object2);
 
 	inline float Squared(float input) { return input * input; }
 
