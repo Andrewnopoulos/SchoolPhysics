@@ -4,7 +4,7 @@
 
 int main()
 {
-	auto tute = new PhysicsTute();
+	auto tute = new PhysXTutorial();
 
 	tute->Run();
 

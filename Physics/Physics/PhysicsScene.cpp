@@ -352,54 +352,6 @@ bool PhysicsScene::SphereAABBCollision(SphereClass* sphere, AABBClass* box)
 		float smallestOverlap = glm::min(glm::min(xOverlap, yOverlap), zOverlap);
 		glm::vec3 collisionNormal;
 
-		// depending on which overlap is smallest, determine normal of collision
-		// depending on which box is on which side, determine direction of separation
-		//if (smallestOverlap == xOverlap)
-		//{
-		//	collisionNormal = glm::vec3(1, 0, 0);
-		//	if (box->GetCenter().x < sphere->m_position.x)
-		//	{
-		//		box->m_position.x -= smallestOverlap / 2;
-		//		sphere->m_position.x += smallestOverlap / 2;
-		//	}
-		//	else
-		//	{
-		//		collisionNormal *= -1.0f;
-		//		box->m_position.x += smallestOverlap / 2;
-		//		sphere->m_position.x -= smallestOverlap / 2;
-		//	}
-		//}
-		//else if (smallestOverlap == yOverlap)
-		//{
-		//	collisionNormal = glm::vec3(0, 1, 0);
-		//	if (box->GetCenter().y < sphere->m_position.y)
-		//	{
-		//		box->m_position.y -= smallestOverlap / 2;
-		//		sphere->m_position.y += smallestOverlap / 2;
-		//	}
-		//	else
-		//	{
-		//		collisionNormal *= -1.0f;
-		//		box->m_position.y += smallestOverlap / 2;
-		//		sphere->m_position.y -= smallestOverlap / 2;
-		//	}
-		//}
-		//else if (smallestOverlap == zOverlap)
-		//{
-		//	collisionNormal = glm::vec3(0, 0, 1);
-		//	if (box->GetCenter().z < sphere->m_position.z)
-		//	{
-		//		box->m_position.z -= smallestOverlap / 2;
-		//		sphere->m_position.z += smallestOverlap / 2;
-		//	}
-		//	else
-		//	{
-		//		collisionNormal *= -1.0f;
-		//		box->m_position.z += smallestOverlap / 2;
-		//		sphere->m_position.z -= smallestOverlap / 2;
-		//	}
-		//}
-
 		float delta = 0;
 		int axis;
 
