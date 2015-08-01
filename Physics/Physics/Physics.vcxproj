@@ -44,13 +44,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)Physics\dep\aieutil;$(SolutionDir)Physics\dep\glm;$(SolutionDir)Physics\dep\glfw-3.1.bin.WIN32\include;$(SolutionDir)Physics\dep\PhysX-3.3.2_WINDOWS_SDK_Core\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Physics\dep\aieutil;$(SolutionDir)Physics\dep\glm;$(SolutionDir)Physics\dep\glfw-3.1.bin.WIN32\include;$(SolutionDir)Physics\dep\PhysX-3.3.2_WINDOWS_SDK_Core\Include;$(SolutionDir)Physics\dep\FBXLoader;$(SolutionDir)Physics\dep\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLM_SWIZZLE;GLM_FORCE_PURE;WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Physics\dep\glfw-3.1.bin.WIN32\lib-vc2013;$(SolutionDir)Physics\dep\PhysX-3.3.2_WINDOWS_SDK_Core\Lib\vc12win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PhysX3CharacterKinematicDEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PhysX3CookingDEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3GpuDEBUG_x86.lib;PhysX3VehicleDEBUG.lib;PhysXProfileSDKDEBUG.lib;PhysXVisualDebuggerSDKDEBUG.lib;PhysX3DEBUG_x86.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Physics\dep\glfw-3.1.bin.WIN32\lib-vc2013;$(SolutionDir)Physics\dep\PhysX-3.3.2_WINDOWS_SDK_Core\Lib\vc12win32;$(SolutionDir)Physics\dep\FBXLoader;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PhysX3CharacterKinematicDEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PhysX3CookingDEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3GpuDEBUG_x86.lib;PhysX3VehicleDEBUG.lib;PhysXProfileSDKDEBUG.lib;PhysXVisualDebuggerSDKDEBUG.lib;PhysX3DEBUG_x86.lib;glfw3.lib;opengl32.lib;FBXLoader_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -72,6 +72,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="dep\aieutil\Gizmos.cpp" />
+    <ClCompile Include="FBXObject.cpp" />
     <ClCompile Include="FlyCamera.cpp" />
     <ClCompile Include="gl_core_4_4.c" />
     <ClCompile Include="main.cpp" />
@@ -88,6 +89,7 @@
     <ClInclude Include="AABBClass.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="FBXObject.h" />
     <ClInclude Include="FlyCamera.h" />
     <ClInclude Include="gl_core_4_4.h" />
     <ClInclude Include="PhysicsObject.h" />

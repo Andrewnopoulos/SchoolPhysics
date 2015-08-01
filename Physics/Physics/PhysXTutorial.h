@@ -5,6 +5,8 @@
 #include <PxPhysicsAPI.h>
 #include <PxScene.h>
 #include <pvd\PxVisualDebugger.h>
+#include <vector>
+#include "FlyCamera.h"
 
 using namespace physx;
 
@@ -34,6 +36,9 @@ private:
 
 	float previousTime;
 	float currentTime;
+	float muzzlespeed;
+	float cooldown;
+	FlyCamera myCam;
 
 	PxFoundation* g_PhysicsFoundation;
 	PxPhysics* g_Physics;
@@ -44,9 +49,14 @@ private:
 	PxMaterial* g_PhysicsMaterial;
 	PxMaterial* g_boxMaterial;
 	PxCooking* g_PhysicsCooker;
+	std::vector<PxRigidActor*> g_PhysXActors;
 
 	void SetUpPhysX();
 	void SetUpVisualDebugger();
 	void SetUpEnvironment();
+	void addWidget(PxShape* shape, PxRigidActor* actor);
+	void addBox(PxShape* pShape, PxRigidActor* actor);
+	void addSphere(PxShape* pShape, PxRigidActor* actor);
+	void FireBall();
 };
 
