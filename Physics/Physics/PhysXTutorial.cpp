@@ -3,7 +3,8 @@
 #include "ParticleEmitter.h"
 #include "ParticleFluidEmitter.h"
 
-//complex humanoid ragdoll example
+
+//complex humanoid ragdoll example
 RagdollNode* ragdollData[] =
 {
 	new RagdollNode(PxQuat(PxPi / 2.0f, Z_AXIS), NO_PARENT, 1, 3, 1, 1, "lower spine"),
@@ -31,6 +32,7 @@ void PhysXTutorial::Startup()
 	SetUpVisualDebugger();
 	SetUpEnvironment();
 	FluidInit();
+	SetUpPlayer();
 
 	PxArticulation* ragDollArticulation;
 	ragDollArticulation = makeRagdoll(g_Physics, ragdollData, PxTransform(PxVec3(0, 0, 0)), 0.1f, g_PhysicsMaterial);
@@ -55,6 +57,35 @@ void PhysXTutorial::Startup()
 
 }
 
+void PhysXTutorial::SetUpPlayer()
+{
+	myHitReport = new MyControllerHitReport();
+	gCharacterManager = PxCreateControllerManager(*g_PhysicsScene);
+	
+	//describe our controller...
+	PxCapsuleControllerDesc desc;
+	desc.height = 1.6f;
+	desc.radius = 0.4f;
+	desc.position.set(0, 0, 0);
+	playerPhysicsMaterial = g_Physics->createMaterial(0.5f, 0.5f, 0.5f);
+	desc.material = playerPhysicsMaterial;
+	desc.reportCallback = myHitReport; //connect it to our collision detection routine
+	desc.density = 10;
+	//create the layer controller
+	gPlayerController = gCharacterManager->createController(desc);
+
+	gPlayerController->setPosition(PxExtendedVec3(0, 5, 0));
+	//set up some variables to control our player with
+	_characterYVelocity = 0; //initialize character velocity
+	_characterRotation = 0; //and rotation
+	_playerGravity = -0.5f; //set up the player gravity
+	myHitReport->clearPlayerContactNormal(); //initialize the contact normal (what we are in contact with)
+	//addToActorList(gPlayerController->getActor()); //so we can draw it's gizmo
+	g_PhysicsScene->addActor(*gPlayerController->getActor());
+	g_PhysXActors.push_back(gPlayerController->getActor());
+
+}
+
 void PhysXTutorial::FluidInit()
 {
 	PxParticleFluid* pf;
@@ -62,7 +93,9 @@ void PhysXTutorial::FluidInit()
 	// set immutable properties.
 	PxU32 maxParticles = 1000;
 	bool perParticleRestOffset = false;
-	pf = g_Physics->createParticleFluid(maxParticles, perParticleRestOffset);	pf->setRestParticleDistance(0.3f);
+	pf = g_Physics->createParticleFluid(maxParticles, perParticleRestOffset);
+
+	pf->setRestParticleDistance(0.3f);
 	pf->setDynamicFriction(0.1);
 	pf->setStaticFriction(0.1);
 	pf->setDamping(0.1);
@@ -157,7 +190,8 @@ PxArticulation* PhysXTutorial::makeRagdoll(PxPhysics* g_Physics, RagdollNode** n
 	}
 	g_PhysXActorsRagDolls.push_back(articulation);
 	return articulation;
-}
+}
+
 
 void PhysXTutorial::FireBall()
 {
@@ -176,6 +210,65 @@ void PhysXTutorial::FireBall()
 	g_PhysXActors.push_back(dynamicActor);
 
 	dynamicActor->setLinearVelocity(velocity, true);
+}
+
+void PhysXTutorial::PlayerInput(float a_deltaTime)
+{
+	bool onGround; //set to true if we are on the ground
+	float movementSpeed = 10.0f; //forward and back movement speed
+	float rotationSpeed = 1.0f; //turn speed
+	//check if we have a contact normal. if y is greater than .3 we assume this is solid ground.This is a rather primitive way to do this.Can you do better ?
+	if (myHitReport->getPlayerContactNormal().y > 0.3f)
+	{
+		_characterYVelocity = -0.1f;
+		onGround = true;
+	}
+	else
+	{
+		_characterYVelocity += _playerGravity * a_deltaTime;
+		onGround = false;
+	}
+	myHitReport->clearPlayerContactNormal();
+	const PxVec3 up(0, 1, 0);
+	//scan the keys and set up our intended velocity based on a global transform
+	PxVec3 velocity(0, _characterYVelocity, 0);
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		velocity.x -= movementSpeed*a_deltaTime;
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		velocity.x += movementSpeed*a_deltaTime;
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		velocity.z += movementSpeed * a_deltaTime;
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		velocity.z -= movementSpeed * a_deltaTime;
+	}
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		velocity.y += movementSpeed * a_deltaTime;
+	}
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+	{
+		_characterRotation -= rotationSpeed * a_deltaTime;
+	}
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+	{
+		_characterRotation += rotationSpeed * a_deltaTime;
+	}
+
+	//To do.. add code to control z movement and jumping
+	float minDistance = 0.001f;
+	PxControllerFilters filter;
+	//make controls relative to player facing
+	PxQuat rotation(_characterRotation, PxVec3(0, 1, 0));
+	//move the controller
+	gPlayerController->move(rotation.rotate(velocity), minDistance, a_deltaTime,
+		filter);
 }
 
 void PhysXTutorial::Update()
@@ -213,6 +306,8 @@ void PhysXTutorial::Update()
 		deltaAvg = 0;
 		samples = 0;
 	}
+
+	PlayerInput(deltaTime);
 
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1))
 	{
@@ -252,10 +347,45 @@ void PhysXTutorial::addWidget(PxShape* shape, PxRigidActor* actor)
 	case PxGeometryType::eSPHERE:
 		addSphere(shape, actor);
 		break;
+	case PxGeometryType::eCAPSULE:
+		addCapsule(shape, actor);
+		break;
 	default:
 		addSphere(shape, actor);
 		break;
 	}
+}
+
+void PhysXTutorial::addCapsule(PxShape* pShape, PxRigidActor* actor)
+{
+	PxCapsuleGeometry capsuleGeometry;
+	float radius = 1.0f;
+	float halfHeight = 1.0f;
+	bool status = pShape->getCapsuleGeometry(capsuleGeometry);
+	if (status)
+	{
+		radius = capsuleGeometry.radius; //copy out capsule radius
+		halfHeight = capsuleGeometry.halfHeight; //copy out capsule half length
+	}
+	PxTransform transform = PxShapeExt::getGlobalPose(*pShape, *actor);
+
+	PxMat44 m(transform); //Create a rotation matrix from transform
+	glm::mat4* M = (glm::mat4*)(&m);
+	//get the world position from the PhysX tranform
+	glm::vec3 position;
+	position.x = m.getPosition().x;
+	position.y = m.getPosition().y;
+	position.z = m.getPosition().z;
+
+	glm::vec4 axis(halfHeight, 0, 0, 0); //axis for the capsule
+	axis = *M * axis; //rotate axis to correct orientation
+	//add our 2 end cap spheres...
+	glm::vec4 colour = glm::vec4(1, 0, 0, 1);
+	Gizmos::addSphere(position + axis.xyz(), radius, 10, 10, colour);
+	Gizmos::addSphere(position - axis.xyz(), radius, 10, 10, colour);
+	//Fix the gizmo rotation
+	glm::mat4 m2 = glm::rotate(*M, 11 / 7.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	Gizmos::addCylinderFilled(position, radius, halfHeight, 10, colour, &m2);
 }
 
 void PhysXTutorial::addBox(PxShape* pShape, PxRigidActor* actor)
@@ -449,6 +579,12 @@ void PhysXTutorial::SetUpEnvironment()
 	g_PhysicsScene->addActor(*box);
 	g_PhysXActors.push_back(box);
 
+	//PxCapsuleGeometry capsule(5, 7);
+	//PxTransform transform(PxVec3(0, 5, 0));
+	//float density = 10;
+	//PxRigidDynamic* pXactor = PxCreateDynamic(*g_Physics, transform, capsule, *g_PhysicsMaterial, density);
+	//g_PhysicsScene->addActor(*pXactor);
+	//g_PhysXActors.push_back(pXactor);
 
 	//add a box
 	//float density = 10;
@@ -461,3 +597,47 @@ void PhysXTutorial::SetUpEnvironment()
 	//g_PhysXActors.push_back(dynamicActor);
 
 }
+
+void MyControllerHitReport::onShapeHit(const PxControllerShapeHit &hit)
+{
+	//gets a reference to a structure which tells us what has been hit and where
+	//get the acter from the shape we hit
+	PxRigidActor* actor = hit.shape->getActor();
+	//get the normal of the thing we hit and store it so the player controller can respond correctly
+	_playerContactNormal = hit.worldNormal;
+	//try to cast to a dynamic actor
+	PxRigidDynamic* myActor = actor->is<PxRigidDynamic>();
+	if (myActor)
+	{
+		//this is where we can apply forces to things we hit
+	}
+}
+
+//void MycollisionCallBack::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs,
+//	PxU32 nbPairs)
+//{
+//	for (PxU32 i = 0; i < nbPairs; i++)
+//	{
+//		const PxContactPair& cp = pairs[i];
+//		//only interested in touches found and lost
+//		if (cp.events & PxPairFlag::eNOTIFY_TOUCH_FOUND)
+//		{
+//			/*cout << "Collision Detected between: ";
+//			cout << pairHeader.actors[0]->getName();
+//			cout << pairHeader.actors[1]->getName() << endl;*/
+//		}
+//	}//
+//}
+//
+//void MycollisionCallBack::onTrigger(PxTriggerPair* pairs, PxU32 nbPairs)
+//{
+//	for (PxU32 i = 0; i < nbPairs; i++)
+//	{
+//		PxTriggerPair* pair = pairs + i;
+//		PxActor* triggerActor = pair->triggerActor;
+//		PxActor* otherActor = pair->otherActor;
+//		/*cout << otherActor getName();
+//		cout << " Entered Trigger ";
+//		cout << triggerActor getName()<endl;*/
+//	}
+//};

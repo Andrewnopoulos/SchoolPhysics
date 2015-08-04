@@ -9,34 +9,34 @@ void FlyCamera::HandleKeyboardInput(float deltaTime)
 
 	vec3 moveDir(0.0f);
 
-	if (glfwGetKey(myWindow, GLFW_KEY_W) == GLFW_PRESS)
-	{
-		moveDir -= Forward;
-	}
+	//if (glfwGetKey(myWindow, GLFW_KEY_W) == GLFW_PRESS)
+	//{
+	//	moveDir -= Forward;
+	//}
 
-	if (glfwGetKey(myWindow, GLFW_KEY_S) == GLFW_PRESS)
-	{
-		moveDir += Forward;
-	}
+	//if (glfwGetKey(myWindow, GLFW_KEY_S) == GLFW_PRESS)
+	//{
+	//	moveDir += Forward;
+	//}
 
-	if (glfwGetKey(myWindow, GLFW_KEY_A) == GLFW_PRESS)
-	{
-		moveDir -= Right;
-	}
+	//if (glfwGetKey(myWindow, GLFW_KEY_A) == GLFW_PRESS)
+	//{
+	//	moveDir -= Right;
+	//}
 
-	if (glfwGetKey(myWindow, GLFW_KEY_D) == GLFW_PRESS)
-	{
-		moveDir += Right;
-	} 
+	//if (glfwGetKey(myWindow, GLFW_KEY_D) == GLFW_PRESS)
+	//{
+	//	moveDir += Right;
+	//} 
 
-	if (glfwGetKey(myWindow, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-	{
-		moveDir += glm::vec3(0.0f, 1.0f, 0.0f);
-	}
-	if (glfwGetKey(myWindow, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-	{
-		moveDir -= glm::vec3(0.0f, 1.0f, 0.0f);
-	}
+	//if (glfwGetKey(myWindow, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+	//{
+	//	moveDir += glm::vec3(0.0f, 1.0f, 0.0f);
+	//}
+	//if (glfwGetKey(myWindow, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+	//{
+	//	moveDir -= glm::vec3(0.0f, 1.0f, 0.0f);
+	//}
 
 	float fLength = glm::length(moveDir);
 	if (fLength > 0.01f)

@@ -53,7 +53,9 @@ enum RagDollParts
 //create some constants for axis of rotation to make definition of quaternions a bit neater
 const PxVec3 X_AXIS = PxVec3(1, 0, 0);
 const PxVec3 Y_AXIS = PxVec3(0, 1, 0);
-const PxVec3 Z_AXIS = PxVec3(0, 0, 1);struct RagdollNode
+const PxVec3 Z_AXIS = PxVec3(0, 0, 1);
+
+struct RagdollNode
 {
 	PxQuat globalRotation; //rotation of this link in model space - we could have done this relative to the parent node but it's harder to visualize when setting up the data by hand
 		PxVec3 scaledGobalPos; //Position of the link centre in world space which is calculated when we process the node.It's easiest if we store it here so we have it when we transform the child
@@ -71,6 +73,35 @@ const PxVec3 Z_AXIS = PxVec3(0, 0, 1);struct RagdollNode
 			_globalRotation, parentNodeIdx = _parentNodeIdx; halfLength = _halfLength; radius = _radius;
 		parentLinkPos = _parentLinkPos; childLinkPos = _childLinkPos; name = _name;
 	};
+};
+
+//
+////derived class to overide the call backs we are interested in...
+//class MycollisionCallBack : public PxSimulationEventCallback
+//{
+//	virtual void onContact(const PxContactPairHeader& pairHeader, const
+//		PxContactPair* pairs, PxU32 nbPairs){};
+//	virtual void onTrigger(PxTriggerPair* pairs, PxU32 nbPairs){};
+//	virtual void onConstraintBreak(PxConstraintInfo*, PxU32){};
+//	virtual void onWake(PxActor**, PxU32){};
+//	virtual void onSleep(PxActor**, PxU32){};
+//};
+
+class MyControllerHitReport : public PxUserControllerHitReport
+{
+public:
+	//overload the onShapeHit function
+	virtual void onShapeHit(const PxControllerShapeHit &hit);
+	//other collision functions which we must overload 
+	//these handle collision with other controllers and hitting obstacles
+	virtual void onControllerHit(const PxControllersHit &hit){};
+	//Called when current controller hits another controller. More...
+	virtual void onObstacleHit(const PxControllerObstacleHit &hit){};
+	//Called when current controller hits a user-defined obstacl
+	MyControllerHitReport() :PxUserControllerHitReport(){};
+	PxVec3 getPlayerContactNormal(){ return _playerContactNormal; };
+	void clearPlayerContactNormal(){ _playerContactNormal = PxVec3(0, 0, 0); };
+	PxVec3 _playerContactNormal;
 };
 
 class PhysXTutorial : public Application
@@ -92,6 +123,10 @@ private:
 	int samples;
 	float deltaAvg;
 
+	float _characterYVelocity;
+	float _characterRotation;
+	float _playerGravity;
+
 	PxFoundation* g_PhysicsFoundation;
 	PxPhysics* g_Physics;
 	PxScene* g_PhysicsScene;
@@ -104,10 +139,16 @@ private:
 	std::vector<PxRigidActor*> g_PhysXActors;
 	std::vector<PxArticulation*> g_PhysXActorsRagDolls;
 	ParticleFluidEmitter* m_particleEmitter;
+	MyControllerHitReport* myHitReport;
+	PxControllerManager* gCharacterManager;
+	PxMaterial* playerPhysicsMaterial;
+	PxController* gPlayerController;
 
+	void PlayerInput(float a_deltaTime);
 	void SetUpPhysX();
 	void SetUpVisualDebugger();
 	void SetUpEnvironment();
+	void SetUpPlayer();
 	void addWidget(PxShape* shape, PxRigidActor* actor);
 	void addBox(PxShape* pShape, PxRigidActor* actor);
 	void addSphere(PxShape* pShape, PxRigidActor* actor);
