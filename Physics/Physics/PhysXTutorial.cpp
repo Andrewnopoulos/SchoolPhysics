@@ -1,5 +1,7 @@
 #include "PhysXTutorial.h"
 #include <Gizmos.h>
+#include "ParticleEmitter.h"
+#include "ParticleFluidEmitter.h"
 
 //complex humanoid ragdoll example
 RagdollNode* ragdollData[] =
@@ -28,6 +30,7 @@ void PhysXTutorial::Startup()
 	SetUpPhysX();
 	SetUpVisualDebugger();
 	SetUpEnvironment();
+	FluidInit();
 
 	PxArticulation* ragDollArticulation;
 	ragDollArticulation = makeRagdoll(g_Physics, ragdollData, PxTransform(PxVec3(0, 0, 0)), 0.1f, g_PhysicsMaterial);
@@ -41,12 +44,42 @@ void PhysXTutorial::Startup()
 	myCam.setLookAt(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
 
 	myCam.setSpeed(50);
-	myCam.setRotationSpeed(2.0f);
+	myCam.setRotationSpeed(0.01f);
 
 	muzzlespeed = -70.0f;
 
 	cooldown = 2.0f;
 
+	deltaAvg = 0;
+	samples = 0;
+
+}
+
+void PhysXTutorial::FluidInit()
+{
+	PxParticleFluid* pf;
+	// create particle system in PhysX SDK
+	// set immutable properties.
+	PxU32 maxParticles = 1000;
+	bool perParticleRestOffset = false;
+	pf = g_Physics->createParticleFluid(maxParticles, perParticleRestOffset);	pf->setRestParticleDistance(0.3f);
+	pf->setDynamicFriction(0.1);
+	pf->setStaticFriction(0.1);
+	pf->setDamping(0.1);
+	pf->setParticleMass(.1);
+	pf->setRestitution(0);
+	//pf->setParticleReadDataFlag(PxParticleReadDataFlag::eDENSITY_BUFFER,
+	// true);
+	pf->setParticleBaseFlag(PxParticleBaseFlag::eCOLLISION_TWOWAY, true);
+	pf->setStiffness(100);
+	if (pf)
+	{
+		g_PhysicsScene->addActor(*pf);
+		m_particleEmitter = new ParticleFluidEmitter(maxParticles,
+			PxVec3(0, 10, 0), pf, .1);
+		m_particleEmitter->setStartVelocityRange(-0.001f, -250.0f, -0.001f,
+			0.001f, -250.0f, 0.001f);
+	}
 }
 
 PxArticulation* PhysXTutorial::makeRagdoll(PxPhysics* g_Physics, RagdollNode** nodeArray,
@@ -120,7 +153,6 @@ PxArticulation* PhysXTutorial::makeRagdoll(PxPhysics* g_Physics, RagdollNode** n
 			joint->setTwistLimit(-0.1f, 0.1f);
 			joint->setTwistLimitEnabled(true);
 		}
-
 		currentNode++;
 	}
 	g_PhysXActorsRagDolls.push_back(articulation);
@@ -154,6 +186,7 @@ void PhysXTutorial::Update()
 
 	myCam.update(deltaTime);
 
+	time += deltaTime;
 	cooldown -= deltaTime;
 
 	if (deltaTime <= 0)
@@ -166,6 +199,21 @@ void PhysXTutorial::Update()
 		// don’t need to do anything here yet but we have to fetch results
 	}
 
+	deltaAvg += deltaTime;
+	samples += 1;
+
+	if (time >= 2)
+	{
+		deltaAvg /= samples;
+		time = 0;
+		float frameRate = 1.0f / deltaAvg;
+		char buffer[50];
+		sprintf(buffer, "The frame rate is %f", frameRate);
+		glfwSetWindowTitle(window, buffer);
+		deltaAvg = 0;
+		samples = 0;
+	}
+
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1))
 	{
 		if (cooldown < 0)
@@ -173,6 +221,12 @@ void PhysXTutorial::Update()
 			FireBall();
 			cooldown = 2.0f;
 		}
+	}
+
+	if (m_particleEmitter)
+	{
+		m_particleEmitter->update(deltaTime);
+		//render all our particles
 	}
 
 	//// box adding code
@@ -304,6 +358,11 @@ void PhysXTutorial::Draw()
 		delete[] links;
 	}
 
+	if (m_particleEmitter)
+	{
+		m_particleEmitter->renderParticles();
+	}
+
 	Gizmos::draw(myCam.getProjectionView());
 }
 void PhysXTutorial::Destroy()
@@ -354,12 +413,43 @@ void PhysXTutorial::SetUpVisualDebugger()
 void PhysXTutorial::SetUpEnvironment()
 {
 	//add a plane
-	PxTransform pose = PxTransform(PxVec3(0.0f, 0, 0.0f), PxQuat(PxHalfPi*1.0f,
-		PxVec3(0.0f, 0.0f, 1.0f)));
-	PxRigidStatic* plane = PxCreateStatic(*g_Physics, pose, PxPlaneGeometry(),
-		*g_PhysicsMaterial);
-	//add it to the physX scene
+	//PxTransform pose = PxTransform(PxVec3(0.0f, 0, 0.0f), PxQuat(PxHalfPi*1.0f,
+	//	PxVec3(0.0f, 0.0f, 1.0f)));
+	//PxRigidStatic* plane = PxCreateStatic(*g_Physics, pose, PxPlaneGeometry(),
+	//	*g_PhysicsMaterial);
+	////add it to the physX scene
+	//g_PhysicsScene->addActor(*plane);
+
+	PxTransform pose = PxTransform(PxVec3(0.0f, 0, 0.0f), PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f)));
+	PxRigidStatic* plane = PxCreateStatic(*g_Physics, pose, PxPlaneGeometry(), *g_PhysicsMaterial);
+
+	const PxU32 numShapes = plane->getNbShapes();
 	g_PhysicsScene->addActor(*plane);
+
+	PxBoxGeometry side1(4.5, 1, .5);
+	PxBoxGeometry side2(.5, 1, 4.5);
+	pose = PxTransform(PxVec3(0.0f, 0.5, 4.0f));
+	PxRigidStatic* box = PxCreateStatic(*g_Physics, pose, side1, *g_PhysicsMaterial);
+
+	g_PhysicsScene->addActor(*box);
+	g_PhysXActors.push_back(box);
+
+	pose = PxTransform(PxVec3(0.0f, 0.5, -4.0f));
+	box = PxCreateStatic(*g_Physics, pose, side1, *g_PhysicsMaterial);
+	g_PhysicsScene->addActor(*box);
+	g_PhysXActors.push_back(box);
+
+	pose = PxTransform(PxVec3(4.0f, 0.5, 0));
+	box = PxCreateStatic(*g_Physics, pose, side2, *g_PhysicsMaterial);
+	g_PhysicsScene->addActor(*box);
+	g_PhysXActors.push_back(box);
+
+	pose = PxTransform(PxVec3(-4.0f, 0.5, 0));
+	box = PxCreateStatic(*g_Physics, pose, side2, *g_PhysicsMaterial);
+	g_PhysicsScene->addActor(*box);
+	g_PhysXActors.push_back(box);
+
+
 	//add a box
 	//float density = 10;
 	//PxBoxGeometry box(2, 2, 2);

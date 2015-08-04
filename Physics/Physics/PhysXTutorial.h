@@ -10,6 +10,9 @@
 
 using namespace physx;
 
+class ParticleEmitter;
+class ParticleFluidEmitter;
+
 class myAllocator : public PxAllocatorCallback
 {
 public:
@@ -85,6 +88,10 @@ private:
 	float cooldown;
 	FlyCamera myCam;
 
+	float time;
+	int samples;
+	float deltaAvg;
+
 	PxFoundation* g_PhysicsFoundation;
 	PxPhysics* g_Physics;
 	PxScene* g_PhysicsScene;
@@ -96,6 +103,7 @@ private:
 	PxCooking* g_PhysicsCooker;
 	std::vector<PxRigidActor*> g_PhysXActors;
 	std::vector<PxArticulation*> g_PhysXActorsRagDolls;
+	ParticleFluidEmitter* m_particleEmitter;
 
 	void SetUpPhysX();
 	void SetUpVisualDebugger();
@@ -105,6 +113,7 @@ private:
 	void addSphere(PxShape* pShape, PxRigidActor* actor);
 	void addCapsule(PxShape* pShape, PxRigidActor* actor);
 	void FireBall();
+	void FluidInit();
 	PxArticulation* makeRagdoll(PxPhysics* g_Physics, RagdollNode** nodeArray, PxTransform worldPos, float scaleFactor, PxMaterial* ragdollMaterial);
 };
 
