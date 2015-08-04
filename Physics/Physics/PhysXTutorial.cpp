@@ -2,7 +2,7 @@
 #include <Gizmos.h>
 #include "ParticleEmitter.h"
 #include "ParticleFluidEmitter.h"
-
+#include <iostream>
 
 //complex humanoid ragdoll example
 RagdollNode* ragdollData[] =
@@ -83,6 +83,8 @@ void PhysXTutorial::SetUpPlayer()
 	//addToActorList(gPlayerController->getActor()); //so we can draw it's gizmo
 	g_PhysicsScene->addActor(*gPlayerController->getActor());
 	g_PhysXActors.push_back(gPlayerController->getActor());
+
+	setupFiltering(gPlayerController->getActor(), FilterGroup::ePLAYER, FilterGroup::ePLATFORM);
 
 }
 
@@ -269,6 +271,9 @@ void PhysXTutorial::PlayerInput(float a_deltaTime)
 	//move the controller
 	gPlayerController->move(rotation.rotate(velocity), minDistance, a_deltaTime,
 		filter);
+
+	PxExtendedVec3 pos = gPlayerController->getPosition();
+	myCam.setPosition(glm::vec3(pos.x, pos.y + 5, pos.z));
 }
 
 void PhysXTutorial::Update()
@@ -385,7 +390,8 @@ void PhysXTutorial::addCapsule(PxShape* pShape, PxRigidActor* actor)
 	Gizmos::addSphere(position - axis.xyz(), radius, 10, 10, colour);
 	//Fix the gizmo rotation
 	glm::mat4 m2 = glm::rotate(*M, 11 / 7.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-	Gizmos::addCylinderFilled(position, radius, halfHeight, 10, colour, &m2);
+	Gizmos::addCylinderFilled(position, radius, halfHeight, 10, colour, &m2);
+
 }
 
 void PhysXTutorial::addBox(PxShape* pShape, PxRigidActor* actor)
@@ -495,6 +501,7 @@ void PhysXTutorial::Draw()
 
 	Gizmos::draw(myCam.getProjectionView());
 }
+
 void PhysXTutorial::Destroy()
 {
 	g_PhysicsScene->release();
@@ -502,6 +509,28 @@ void PhysXTutorial::Destroy()
 	g_PhysicsFoundation->release();
 
 	Gizmos::destroy();
+}
+
+PxFilterFlags MyFilterShader(PxFilterObjectAttributes attributes0, PxFilterData
+	filterData0, PxFilterObjectAttributes attributes1, PxFilterData filterData1,
+	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+{
+	// let triggers through
+	if (PxFilterObjectIsTrigger(attributes0) ||
+		PxFilterObjectIsTrigger(attributes1))
+	{
+		pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+		return PxFilterFlag::eDEFAULT;
+	}
+	// generate contacts for all that were not filtered above
+	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+	// trigger the contact callback for pairs (A,B) where
+	// the filtermask of A contains the ID of B and vice versa.
+	if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 &
+		filterData0.word1))
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND |
+		PxPairFlag::eNOTIFY_TOUCH_LOST;
+	return PxFilterFlag::eDEFAULT;
 }
 
 void PhysXTutorial::SetUpPhysX()
@@ -516,9 +545,46 @@ void PhysXTutorial::SetUpPhysX()
 	g_PhysicsMaterial = g_Physics->createMaterial(0.5f, 0.5f, 0.5f);
 	PxSceneDesc sceneDesc(g_Physics->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0, -10.0f, 0);
-	sceneDesc.filterShader = &physx::PxDefaultSimulationFilterShader;
+	sceneDesc.filterShader = MyFilterShader;
 	sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(1);
 	g_PhysicsScene = g_Physics->createScene(sceneDesc);
+
+	PxSimulationEventCallback* mycollisionCallBack = new MycollisionCallBack();
+	g_PhysicsScene->setSimulationEventCallback(mycollisionCallBack);
+}
+
+//helper function to set up filtering
+void PhysXTutorial::setupFiltering(PxRigidActor* actor, PxU32 filterGroup, PxU32
+	filterMask)
+{
+	PxFilterData filterData;
+	filterData.word0 = filterGroup; // word0 = own ID
+	filterData.word1 = filterMask; // word1 = ID mask to filter pairs that trigger a contact callback;
+	const PxU32 numShapes = actor->getNbShapes();
+	PxShape** shapes = (PxShape**)_aligned_malloc(sizeof(PxShape*)*numShapes, 16);
+
+	actor->getShapes(shapes, numShapes);
+
+	for (PxU32 i = 0; i < numShapes; i++)
+	{
+		PxShape* shape = shapes[i];
+		shape->setSimulationFilterData(filterData);
+	}
+
+	_aligned_free(shapes);
+}
+void PhysXTutorial::setShapeAsTrigger(PxRigidActor* actorIn)
+{
+	PxRigidStatic* staticActor = actorIn->is<PxRigidStatic>();
+	assert(staticActor);
+	const PxU32 numShapes = staticActor->getNbShapes();
+	PxShape** shapes = (PxShape**)_aligned_malloc(sizeof(PxShape*)*numShapes, 16);
+	staticActor->getShapes(shapes, numShapes);
+	for (PxU32 i = 0; i < numShapes; i++)
+	{
+		shapes[i]->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+		shapes[i]->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+	}
 }
 
 void PhysXTutorial::SetUpVisualDebugger()
@@ -579,6 +645,13 @@ void PhysXTutorial::SetUpEnvironment()
 	g_PhysicsScene->addActor(*box);
 	g_PhysXActors.push_back(box);
 
+	pose = PxTransform(PxVec3(-4.0f, 0.5, 10));
+	box = PxCreateStatic(*g_Physics, pose, side2, *g_PhysicsMaterial);
+	setShapeAsTrigger(box);
+	setupFiltering(box, FilterGroup::ePLATFORM, FilterGroup::ePLAYER);
+	g_PhysicsScene->addActor(*box);
+	g_PhysXActors.push_back(box);
+
 	//PxCapsuleGeometry capsule(5, 7);
 	//PxTransform transform(PxVec3(0, 5, 0));
 	//float density = 10;
@@ -613,31 +686,31 @@ void MyControllerHitReport::onShapeHit(const PxControllerShapeHit &hit)
 	}
 }
 
-//void MycollisionCallBack::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs,
-//	PxU32 nbPairs)
-//{
-//	for (PxU32 i = 0; i < nbPairs; i++)
-//	{
-//		const PxContactPair& cp = pairs[i];
-//		//only interested in touches found and lost
-//		if (cp.events & PxPairFlag::eNOTIFY_TOUCH_FOUND)
-//		{
-//			/*cout << "Collision Detected between: ";
-//			cout << pairHeader.actors[0]->getName();
-//			cout << pairHeader.actors[1]->getName() << endl;*/
-//		}
-//	}//
-//}
-//
-//void MycollisionCallBack::onTrigger(PxTriggerPair* pairs, PxU32 nbPairs)
-//{
-//	for (PxU32 i = 0; i < nbPairs; i++)
-//	{
-//		PxTriggerPair* pair = pairs + i;
-//		PxActor* triggerActor = pair->triggerActor;
-//		PxActor* otherActor = pair->otherActor;
-//		/*cout << otherActor getName();
-//		cout << " Entered Trigger ";
-//		cout << triggerActor getName()<endl;*/
-//	}
-//};
+void MycollisionCallBack::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs,
+	PxU32 nbPairs)
+{
+	for (PxU32 i = 0; i < nbPairs; i++)
+	{
+		const PxContactPair& cp = pairs[i];
+		//only interested in touches found and lost
+		if (cp.events & PxPairFlag::eNOTIFY_TOUCH_FOUND)
+		{
+			/*cout << "Collision Detected between: ";
+			cout << pairHeader.actors[0]->getName();
+			cout << pairHeader.actors[1]->getName() << endl;*/
+		}
+	}
+}
+
+void MycollisionCallBack::onTrigger(PxTriggerPair* pairs, PxU32 nbPairs)
+{
+	for (PxU32 i = 0; i < nbPairs; i++)
+	{
+		PxTriggerPair* pair = pairs + i;
+		//PxActor* triggerActor = pair->triggerActor;
+		//PxActor* otherActor = pair->otherActor;
+		//std::cout << otherActor->getName();
+		std::cout << " Entered Trigger " << std::endl;
+		//std::cout << triggerActor->getName() << std::endl;
+	}
+};

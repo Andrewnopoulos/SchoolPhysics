@@ -50,6 +50,16 @@ enum RagDollParts
 	RIGHT_LOWER_ARM,
 };
 
+struct FilterGroup
+{
+	enum Enum
+	{
+		ePLAYER = (1 << 0),
+		ePLATFORM = (1 << 1),
+		eGROUND = (1 << 2)
+	};
+};
+
 //create some constants for axis of rotation to make definition of quaternions a bit neater
 const PxVec3 X_AXIS = PxVec3(1, 0, 0);
 const PxVec3 Y_AXIS = PxVec3(0, 1, 0);
@@ -75,17 +85,16 @@ struct RagdollNode
 	};
 };
 
-//
-////derived class to overide the call backs we are interested in...
-//class MycollisionCallBack : public PxSimulationEventCallback
-//{
-//	virtual void onContact(const PxContactPairHeader& pairHeader, const
-//		PxContactPair* pairs, PxU32 nbPairs){};
-//	virtual void onTrigger(PxTriggerPair* pairs, PxU32 nbPairs){};
-//	virtual void onConstraintBreak(PxConstraintInfo*, PxU32){};
-//	virtual void onWake(PxActor**, PxU32){};
-//	virtual void onSleep(PxActor**, PxU32){};
-//};
+//derived class to overide the call backs we are interested in...
+class MycollisionCallBack : public PxSimulationEventCallback
+{
+	virtual void onContact(const PxContactPairHeader& pairHeader, const
+		PxContactPair* pairs, PxU32 nbPairs);
+	virtual void onTrigger(PxTriggerPair* pairs, PxU32 nbPairs);
+	virtual void onConstraintBreak(PxConstraintInfo*, PxU32){};
+	virtual void onWake(PxActor**, PxU32){};
+	virtual void onSleep(PxActor**, PxU32){};
+};
 
 class MyControllerHitReport : public PxUserControllerHitReport
 {
@@ -102,7 +111,8 @@ public:
 	PxVec3 getPlayerContactNormal(){ return _playerContactNormal; };
 	void clearPlayerContactNormal(){ _playerContactNormal = PxVec3(0, 0, 0); };
 	PxVec3 _playerContactNormal;
-};
+};
+
 
 class PhysXTutorial : public Application
 {
@@ -153,8 +163,10 @@ private:
 	void addBox(PxShape* pShape, PxRigidActor* actor);
 	void addSphere(PxShape* pShape, PxRigidActor* actor);
 	void addCapsule(PxShape* pShape, PxRigidActor* actor);
+	void setShapeAsTrigger(PxRigidActor* actorIn);
 	void FireBall();
 	void FluidInit();
 	PxArticulation* makeRagdoll(PxPhysics* g_Physics, RagdollNode** nodeArray, PxTransform worldPos, float scaleFactor, PxMaterial* ragdollMaterial);
+	void setupFiltering(PxRigidActor* actor, PxU32 filterGroup, PxU32 filterMask);
 };
 
