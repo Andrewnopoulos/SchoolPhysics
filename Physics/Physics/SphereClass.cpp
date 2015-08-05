@@ -10,11 +10,12 @@ SphereClass::SphereClass(glm::vec3 position, glm::vec3 velocity, float mass, flo
 
 SphereClass::~SphereClass()
 {
+
 }
 
 void SphereClass::MakeGizmo()
 {
-	Gizmos::addSphere(m_position, m_radius, 20, 20, m_colour);
+	Gizmos::addSphere(m_position, m_radius, 8, 8, m_colour);
 }
 
 void SphereClass::Debug()

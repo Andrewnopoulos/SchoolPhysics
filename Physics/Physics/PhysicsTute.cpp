@@ -18,20 +18,30 @@ void PhysicsTute::Startup()
 
 	AABBClass *axisbox;
 
-	newBall = new SphereClass(glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), 1.0f, 5, 0.95f, glm::vec4(1, 0, 0, 1));
-	physicsScene->AddActor(newBall);
-	newBall = new SphereClass(glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), 1.0f, 5, 0.95f, glm::vec4(1, 0, 0, 1));
-	physicsScene->AddActor(newBall);
-	
-	axisbox = new AABBClass(glm::vec3(7, 1, 5), glm::vec3(0, 0, 0), 1.0f, 0.95f, glm::vec3(6, 6, 6), glm::vec4(0, 1, 0, 1));
+	axisbox = new AABBClass(glm::vec3(10, 1, 0), glm::vec3(0, 0, 0), 1.0f, 0.95f, glm::vec3(6, 6, 6), glm::vec4(0, 1, 0, 1));
 	axisbox->m_static = true;
 	physicsScene->AddActor(axisbox);
-	axisbox = new AABBClass(glm::vec3(10, 14, 5), glm::vec3(0, 0, 0), 1.0f, 0.95f, glm::vec3(3, 3, 3), glm::vec4(0, 1, 0, 1));
+	axisbox = new AABBClass(glm::vec3(10, 1, 60), glm::vec3(0, 0, 0), 1.0f, 0.95f, glm::vec3(3, 3, 3), glm::vec4(0, 1, 0, 1));
+	axisbox->m_static = true;
+	physicsScene->AddActor(axisbox);
+
+	newBall = new SphereClass(glm::vec3(10, 1, 10), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
+	physicsScene->AddActor(newBall);
+	newBall = new SphereClass(glm::vec3(10, 1, 20), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
+	physicsScene->AddActor(newBall);
+	newBall = new SphereClass(glm::vec3(10, 1, 30), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
+	physicsScene->AddActor(newBall);
+	newBall = new SphereClass(glm::vec3(10, 1, 40), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
+	physicsScene->AddActor(newBall);
+	newBall = new SphereClass(glm::vec3(10, 1, 50), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
+	physicsScene->AddActor(newBall);
+
+	axisbox = new AABBClass(glm::vec3(10, 90, 0), glm::vec3(0, 0, 0), 1.0f, 0.95f, glm::vec3(3, 3, 3), glm::vec4(0, 1, 0, 1));
 	physicsScene->AddActor(axisbox);
 
 	Plane *newPlane;
 
-	newPlane = new Plane(glm::vec3(0, 1, 0), -20.0f);
+	newPlane = new Plane(glm::vec3(0, 1, 0), -3.0f);
 	physicsScene->m_walls.push_back(newPlane);
 
 	//newPlane = new Plane(glm::vec3(0, -1, 0), -20.0f);
@@ -43,11 +53,23 @@ void PhysicsTute::Startup()
 	//newPlane = new Plane(glm::vec3(1, 0, 0), -20.0f);
 	//physicsScene->m_walls.push_back(newPlane);
 
-	//SpringJoint* joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[0]), (RigidBody*)(physicsScene->m_actors[1]), 10, 0.5f);
-	//physicsScene->AddActor(joint);
+	SpringJoint* joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[0]), (RigidBody*)(physicsScene->m_actors[2]), 0.8f, 0.9f);
+	physicsScene->AddActor(joint);
 
-	//joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[1]), (RigidBody*)(physicsScene->m_actors[2]), 5, 0.3f);
-	//physicsScene->AddActor(joint);
+	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[2]), (RigidBody*)(physicsScene->m_actors[3]), 0.8f, 0.9f);
+	physicsScene->AddActor(joint);
+
+	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[3]), (RigidBody*)(physicsScene->m_actors[4]), 0.8f, 0.9f);
+	physicsScene->AddActor(joint);
+
+	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[4]), (RigidBody*)(physicsScene->m_actors[5]), 0.8f, 0.9f);
+	physicsScene->AddActor(joint);
+
+	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[5]), (RigidBody*)(physicsScene->m_actors[6]), 0.8f, 0.9f);
+	physicsScene->AddActor(joint);
+
+	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[6]), (RigidBody*)(physicsScene->m_actors[1]), 0.8f, 0.9f);
+	physicsScene->AddActor(joint);
 
 	currentTime = 0;
 	previousTime = 0;
@@ -71,13 +93,22 @@ void PhysicsTute::Update()
 
 	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
 	{
-		glm::vec3 separation = ((RigidBody*)physicsScene->m_actors[1])->m_position - ((RigidBody*)physicsScene->m_actors[2])->m_position;
-		((RigidBody*)physicsScene->m_actors[2])->applyForceToActor((RigidBody*)physicsScene->m_actors[1], separation * 5 / glm::length(separation));
+		SphereClass *newBall;
+		newBall = new SphereClass(glm::vec3(glm::linearRand(-50, 50), 10, glm::linearRand(-50, 50)), 
+			glm::vec3(glm::linearRand(-20, 20), glm::linearRand(-20, 20), glm::linearRand(-20, 20)),
+			1.0f, glm::linearRand(1, 4), 0.95f, glm::vec4(1, 0, 0, 1));
+		physicsScene->AddActor(newBall);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		((RigidBody*)physicsScene->m_actors[2])->applyForce(glm::vec3(0, 5, 0));
+		AABBClass *axisbox;
+		axisbox = new AABBClass(glm::vec3(glm::linearRand(-50, 50), 10, glm::linearRand(-50, 50)), 
+			glm::vec3(glm::linearRand(-20, 20), glm::linearRand(-20, 20), glm::linearRand(-20, 20)),
+			1.0f, 0.95f, 
+			glm::vec3(glm::linearRand(1, 4), glm::linearRand(1, 4), glm::linearRand(1, 4)),
+			glm::vec4(0, 1, 0, 1));
+		physicsScene->AddActor(axisbox);
 	}
 
 	for each(PhysicsObject* var in physicsScene->m_actors)
@@ -132,7 +163,6 @@ void PhysicsTute::Update()
 				}
 			}
 		}
-
 	}
 
 	physicsScene->Update();

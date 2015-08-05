@@ -7,7 +7,6 @@ class RigidBody : public PhysicsObject
 {
 public:
 	glm::vec3 m_position;
-	glm::vec3 m_velocity;
 	float m_mass;
 	float m_rotation2D;
 	float m_elasticity;
@@ -19,4 +18,7 @@ public:
 	void applyForce(glm::vec3 force);
 	void applyForceToActor(RigidBody* actor2, glm::vec3 force);
 	~RigidBody();
+	glm::vec3 GetVelocity();
+private:
+	glm::vec3 m_velocity;
 };

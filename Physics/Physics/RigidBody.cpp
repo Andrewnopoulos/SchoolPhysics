@@ -39,3 +39,13 @@ void RigidBody::Update(glm::vec3 gravity, float timeStep)
 		m_velocity = glm::vec3(0);
 	}
 }
+
+glm::vec3 RigidBody::GetVelocity()
+{
+	if (m_static)
+	{
+		return glm::vec3(0);
+	}
+
+	return m_velocity;
+}

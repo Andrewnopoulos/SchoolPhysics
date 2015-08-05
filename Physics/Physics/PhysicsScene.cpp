@@ -76,7 +76,7 @@ void PhysicsScene::Update()
 
 void PhysicsScene::CollisionResponse(glm::vec3 collisionNormal, RigidBody* object1, RigidBody* object2)
 {
-	glm::vec3 relativeVelocity = object1->m_velocity - object2->m_velocity;
+	glm::vec3 relativeVelocity = object1->GetVelocity() - object2->GetVelocity();
 	glm::vec3 collisionVector = collisionNormal * glm::abs(glm::dot(relativeVelocity, collisionNormal));
 	glm::vec3 forceVector = collisionVector * 1.0f / (1 / object1->m_mass + 1 / object2->m_mass);
 	// use newton's 3rd law to apply collision forces to bodies
@@ -145,7 +145,7 @@ bool PhysicsScene::SpherePlaneCollision(SphereClass* sphere, Plane* plane)
 		//{
 		//	planeNormal *= -1; // flip normal if behind plane
 		//}
-		glm::vec3 forceVector = -1 * sphere->m_mass * planeNormal * glm::dot(planeNormal, sphere->m_velocity);
+		glm::vec3 forceVector = -1 * sphere->m_mass * planeNormal * glm::dot(planeNormal, sphere->GetVelocity());
 		sphere->applyForce(2 * forceVector);
 		sphere->m_position += collisionNormal * intersection * 1.5f;
 		return true;
@@ -187,7 +187,7 @@ bool PhysicsScene::AABBPlaneCollision(AABBClass* box, Plane* plane)
 	if (closest < plane->m_distanceToOrigin)
 	{
 		float intersection = plane->m_distanceToOrigin - closest;
-		glm::vec3 forceVector = -1 * box->m_mass * normal * glm::dot(normal, box->m_velocity);
+		glm::vec3 forceVector = -1 * box->m_mass * normal * glm::dot(normal, box->GetVelocity());
 		box->applyForce(2 * forceVector);
 		box->m_position += normal * intersection;
 		return true;
@@ -353,7 +353,7 @@ bool PhysicsScene::SphereAABBCollision(SphereClass* sphere, AABBClass* box)
 		glm::vec3 collisionNormal;
 
 		float delta = 0;
-		int axis;
+		int axis = 0;
 
 		if (smallestOverlap == xOverlap)
 		{

@@ -48,9 +48,9 @@ void PhysXTutorial::Startup()
 	myCam.setSpeed(50);
 	myCam.setRotationSpeed(0.01f);
 
-	muzzlespeed = -70.0f;
+	muzzlespeed = -60.0f;
 
-	cooldown = 2.0f;
+	cooldown = 0.5f;
 
 	deltaAvg = 0;
 	samples = 0;
@@ -80,7 +80,6 @@ void PhysXTutorial::SetUpPlayer()
 	_characterRotation = 0; //and rotation
 	_playerGravity = -0.5f; //set up the player gravity
 	myHitReport->clearPlayerContactNormal(); //initialize the contact normal (what we are in contact with)
-	//addToActorList(gPlayerController->getActor()); //so we can draw it's gizmo
 	g_PhysicsScene->addActor(*gPlayerController->getActor());
 	g_PhysXActors.push_back(gPlayerController->getActor());
 
@@ -319,7 +318,7 @@ void PhysXTutorial::Update()
 		if (cooldown < 0)
 		{
 			FireBall();
-			cooldown = 2.0f;
+			cooldown = 0.5f;
 		}
 	}
 
@@ -453,7 +452,7 @@ void PhysXTutorial::addSphere(PxShape* pShape, PxRigidActor* actor)
 	{
 		colour = glm::vec4(0, 1, 0, 1);
 	}
-	Gizmos::addSphere(position, radius, 7, 7, colour, &M);
+	Gizmos::addSphere(position, radius, 6, 6, colour, &M);
 }
 
 void PhysXTutorial::Draw()
@@ -572,7 +571,8 @@ void PhysXTutorial::setupFiltering(PxRigidActor* actor, PxU32 filterGroup, PxU32
 	}
 
 	_aligned_free(shapes);
-}
+}
+
 void PhysXTutorial::setShapeAsTrigger(PxRigidActor* actorIn)
 {
 	PxRigidStatic* staticActor = actorIn->is<PxRigidStatic>();
@@ -710,7 +710,7 @@ void MycollisionCallBack::onTrigger(PxTriggerPair* pairs, PxU32 nbPairs)
 		//PxActor* triggerActor = pair->triggerActor;
 		//PxActor* otherActor = pair->otherActor;
 		//std::cout << otherActor->getName();
-		std::cout << " Entered Trigger " << std::endl;
+		std::cout << " Inside Trigger " << std::endl;
 		//std::cout << triggerActor->getName() << std::endl;
 	}
 };
