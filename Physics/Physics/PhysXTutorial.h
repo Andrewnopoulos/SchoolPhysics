@@ -85,16 +85,16 @@ struct RagdollNode
 	};
 };
 
-//derived class to overide the call backs we are interested in...
-class MycollisionCallBack : public PxSimulationEventCallback
-{
-	virtual void onContact(const PxContactPairHeader& pairHeader, const
-		PxContactPair* pairs, PxU32 nbPairs);
-	virtual void onTrigger(PxTriggerPair* pairs, PxU32 nbPairs);
-	virtual void onConstraintBreak(PxConstraintInfo*, PxU32){};
-	virtual void onWake(PxActor**, PxU32){};
-	virtual void onSleep(PxActor**, PxU32){};
-};
+////derived class to overide the call backs we are interested in...
+//class MycollisionCallBack : public PxSimulationEventCallback
+//{
+//	virtual void onContact(const PxContactPairHeader& pairHeader, const
+//		PxContactPair* pairs, PxU32 nbPairs);
+//	virtual void onTrigger(PxTriggerPair* pairs, PxU32 nbPairs);
+//	virtual void onConstraintBreak(PxConstraintInfo*, PxU32){};
+//	virtual void onWake(PxActor**, PxU32){};
+//	virtual void onSleep(PxActor**, PxU32){};
+//};
 
 class MyControllerHitReport : public PxUserControllerHitReport
 {
@@ -114,7 +114,7 @@ public:
 };
 
 
-class PhysXTutorial : public Application
+class PhysXTutorial : public Application, public PxSimulationEventCallback
 {
 	void Startup();
 	void Destroy();
@@ -166,7 +166,15 @@ private:
 	void setShapeAsTrigger(PxRigidActor* actorIn);
 	void FireBall();
 	void FluidInit();
+	void SpawnBox();
 	PxArticulation* makeRagdoll(PxPhysics* g_Physics, RagdollNode** nodeArray, PxTransform worldPos, float scaleFactor, PxMaterial* ragdollMaterial);
 	void setupFiltering(PxRigidActor* actor, PxU32 filterGroup, PxU32 filterMask);
+
+	virtual void onContact(const PxContactPairHeader& pairHeader, const
+		PxContactPair* pairs, PxU32 nbPairs);
+	virtual void onTrigger(PxTriggerPair* pairs, PxU32 nbPairs);
+	virtual void onConstraintBreak(PxConstraintInfo*, PxU32){};
+	virtual void onWake(PxActor**, PxU32){};
+	virtual void onSleep(PxActor**, PxU32){};
 };
 

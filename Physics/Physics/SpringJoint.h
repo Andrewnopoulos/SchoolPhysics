@@ -13,7 +13,7 @@ private:
 
 	RigidBody* m_connections[2];
 	float m_damping;
-	float m_restLength;
+	glm::vec3 m_restLength;
 	float m_springCoefficient;
 
 public:

@@ -548,7 +548,7 @@ void PhysXTutorial::SetUpPhysX()
 	sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(1);
 	g_PhysicsScene = g_Physics->createScene(sceneDesc);
 
-	PxSimulationEventCallback* mycollisionCallBack = new MycollisionCallBack();
+	PxSimulationEventCallback* mycollisionCallBack = this;
 	g_PhysicsScene->setSimulationEventCallback(mycollisionCallBack);
 }
 
@@ -671,6 +671,19 @@ void PhysXTutorial::SetUpEnvironment()
 
 }
 
+void PhysXTutorial::SpawnBox()
+{
+	//add a box
+	float density = 10;
+	PxBoxGeometry box(2, 2, 2);
+	PxTransform transform(PxVec3(0, 5, 0));
+	PxRigidDynamic* dynamicActor = PxCreateDynamic(*g_Physics, transform, box,
+		*g_PhysicsMaterial, density);
+	//add it to the physX scene
+	g_PhysicsScene->addActor(*dynamicActor);
+	g_PhysXActors.push_back(dynamicActor);
+}
+
 void MyControllerHitReport::onShapeHit(const PxControllerShapeHit &hit)
 {
 	//gets a reference to a structure which tells us what has been hit and where
@@ -686,7 +699,7 @@ void MyControllerHitReport::onShapeHit(const PxControllerShapeHit &hit)
 	}
 }
 
-void MycollisionCallBack::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs,
+void PhysXTutorial::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs,
 	PxU32 nbPairs)
 {
 	for (PxU32 i = 0; i < nbPairs; i++)
@@ -702,7 +715,7 @@ void MycollisionCallBack::onContact(const PxContactPairHeader& pairHeader, const
 	}
 }
 
-void MycollisionCallBack::onTrigger(PxTriggerPair* pairs, PxU32 nbPairs)
+void PhysXTutorial::onTrigger(PxTriggerPair* pairs, PxU32 nbPairs)
 {
 	for (PxU32 i = 0; i < nbPairs; i++)
 	{
@@ -711,6 +724,7 @@ void MycollisionCallBack::onTrigger(PxTriggerPair* pairs, PxU32 nbPairs)
 		//PxActor* otherActor = pair->otherActor;
 		//std::cout << otherActor->getName();
 		std::cout << " Inside Trigger " << std::endl;
+		SpawnBox();
 		//std::cout << triggerActor->getName() << std::endl;
 	}
 };

@@ -18,22 +18,22 @@ void PhysicsTute::Startup()
 
 	AABBClass *axisbox;
 
-	axisbox = new AABBClass(glm::vec3(10, 1, 0), glm::vec3(0, 0, 0), 1.0f, 0.95f, glm::vec3(6, 6, 6), glm::vec4(0, 1, 0, 1));
+	axisbox = new AABBClass(glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), 1.0f, 0.95f, glm::vec3(6, 6, 6), glm::vec4(0, 1, 0, 1));
 	axisbox->m_static = true;
 	physicsScene->AddActor(axisbox);
-	axisbox = new AABBClass(glm::vec3(10, 1, 60), glm::vec3(0, 0, 0), 1.0f, 0.95f, glm::vec3(3, 3, 3), glm::vec4(0, 1, 0, 1));
+	axisbox = new AABBClass(glm::vec3(10, 10, 60), glm::vec3(0, 0, 0), 1.0f, 0.95f, glm::vec3(3, 3, 3), glm::vec4(0, 1, 0, 1));
 	axisbox->m_static = true;
 	physicsScene->AddActor(axisbox);
 
-	newBall = new SphereClass(glm::vec3(10, 1, 10), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
+	newBall = new SphereClass(glm::vec3(10, 10, 10), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
 	physicsScene->AddActor(newBall);
-	newBall = new SphereClass(glm::vec3(10, 1, 20), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
+	newBall = new SphereClass(glm::vec3(10, 10, 20), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
 	physicsScene->AddActor(newBall);
-	newBall = new SphereClass(glm::vec3(10, 1, 30), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
+	newBall = new SphereClass(glm::vec3(10, 10, 30), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
 	physicsScene->AddActor(newBall);
-	newBall = new SphereClass(glm::vec3(10, 1, 40), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
+	newBall = new SphereClass(glm::vec3(10, 10, 40), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
 	physicsScene->AddActor(newBall);
-	newBall = new SphereClass(glm::vec3(10, 1, 50), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
+	newBall = new SphereClass(glm::vec3(10, 10, 50), glm::vec3(0, 0, 0), 1.0f, 1, 0.95f, glm::vec4(1, 0, 0, 1));
 	physicsScene->AddActor(newBall);
 
 	axisbox = new AABBClass(glm::vec3(10, 90, 0), glm::vec3(0, 0, 0), 1.0f, 0.95f, glm::vec3(3, 3, 3), glm::vec4(0, 1, 0, 1));
@@ -53,22 +53,22 @@ void PhysicsTute::Startup()
 	//newPlane = new Plane(glm::vec3(1, 0, 0), -20.0f);
 	//physicsScene->m_walls.push_back(newPlane);
 
-	SpringJoint* joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[0]), (RigidBody*)(physicsScene->m_actors[2]), 0.8f, 0.9f);
+	SpringJoint* joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[0]), (RigidBody*)(physicsScene->m_actors[2]), 2.0f, 0.1f);
 	physicsScene->AddActor(joint);
 
-	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[2]), (RigidBody*)(physicsScene->m_actors[3]), 0.8f, 0.9f);
+	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[2]), (RigidBody*)(physicsScene->m_actors[3]), 2.0f, 0.1f);
 	physicsScene->AddActor(joint);
 
-	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[3]), (RigidBody*)(physicsScene->m_actors[4]), 0.8f, 0.9f);
+	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[3]), (RigidBody*)(physicsScene->m_actors[4]), 2.0f, 0.1f);
 	physicsScene->AddActor(joint);
 
-	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[4]), (RigidBody*)(physicsScene->m_actors[5]), 0.8f, 0.9f);
+	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[4]), (RigidBody*)(physicsScene->m_actors[5]), 2.0f, 0.1f);
 	physicsScene->AddActor(joint);
 
-	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[5]), (RigidBody*)(physicsScene->m_actors[6]), 0.8f, 0.9f);
+	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[5]), (RigidBody*)(physicsScene->m_actors[6]), 2.0f, 0.1f);
 	physicsScene->AddActor(joint);
 
-	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[6]), (RigidBody*)(physicsScene->m_actors[1]), 0.8f, 0.9f);
+	joint = new SpringJoint((RigidBody*)(physicsScene->m_actors[6]), (RigidBody*)(physicsScene->m_actors[1]), 2.0f, 0.1f);
 	physicsScene->AddActor(joint);
 
 	currentTime = 0;
